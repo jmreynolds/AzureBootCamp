@@ -1,0 +1,21 @@
+.session-name {
+    text-align: left;
+    font-weight: bold;
+}
+.session-time{
+    text-align: center;
+    width: 5%;
+}
+.session-activity{
+    text-align: left;
+}
+.session-intermission{
+    text-align: center;
+    font-weight: bold;
+}
+thead{
+    text-align: center;
+}
+tfoot{
+    text-align: center;
+}
