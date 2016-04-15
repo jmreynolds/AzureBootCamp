@@ -1,0 +1,317 @@
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>AzureReadiness: DevCamp</title>
+	  <link rel="stylesheet" href="../../style.css">
+   </head>
+   <body>
+      <div class="container">
+        <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="../../README.htm">Home</a>
+            </div>
+        </header>
+        <div class="jumbotron"><h1 id="getting-started-with-elastic-db-database-tools-with-azure-sql">Getting Started with Elastic DB Database Tools with Azure SQL</h1></div>
+<p>Growing and shrinking capacity on demand is one of the key cloud
+computing promises. Delivering on this promise has historically been
+tedious and complex for the database tier of cloud applications. Over
+the last few years, the industry has converged on well-established
+design patterns commonly known as sharding. While the general sharding
+pattern addresses the challenge, building and managing applications
+using sharding requires significant infrastructure investments
+independent of the application’s business logic.</p>
+<p>Azure SQL Elastic DB Tools (in preview) enables the data-tier of an
+application to scale in and out via industry-standard sharding
+practices, while significantly streamlining the development and
+management of your sharded cloud applications. Elastic database tools
+delivers both developer and management functionality which are provided
+through a set of .Net libraries and Azure service templates that you can
+host in your own Azure subscription to manage your highly scalable
+applications. Azure DB Elastic tools implements the infrastructure
+aspects of sharding and thus allows you to focus on the business logic
+of your application instead.</p>
+<p>In this lab, you will be introduced to the developer experience for
+Azure SQL Database Elastic tools.</p>
+<p>This lab includes the following tasks:</p>
+<ul>
+<li><p>Creating a Microsoft Azure SQL Database Server</p>
+</li>
+<li><p>Walking through the sample</p>
+</li>
+<li><p>Appendix - Cleanup</p>
+</li>
+</ul>
+<p>###Creating a Microsoft Azure SQL Database Server</p>
+<p>In this task you will create a new Microsoft Azure SQL Database Server
+and configure the firewall so that connections from applications running
+on your computer are allowed to access the databases on your SQL
+Database server.</p>
+<ol>
+<li><p>Sign in to the <a href="http://portal.azure.com">Azure Portal</a>.</p>
+</li>
+<li><p>Click <strong>New &gt; Data + Storage &gt; SQL Database</strong>.</p>
+<blockquote>
+<p><img class="img-responsive"src="images/image1.png" alt=""></p>
+<p><em>Navigating to the SQL Database Server tab</em></p>
+</blockquote>
+</li>
+<li><p>The <strong>SQL Database</strong> settings blade that appears is where you&#39;ll set
+up the <strong>server and database</strong> details.</p>
+<blockquote>
+<p><img class="img-responsive"src="images/image2.png" alt=""></p>
+</blockquote>
+<p><em>A SQL database in Azure lives on a database server. A server can host
+multiple databases. As you set up a database, you can also create and
+set up the server that will host it, or you can use one that was created
+earlier. We&#39;ll set up a new one.</em></p>
+</li>
+<li><p>Type a <strong>Name</strong> for your database. We&#39;ll come back to cover other
+database settings later.</p>
+</li>
+<li><p>Under <strong>Server</strong> click <strong>Configure required settings</strong>, and then
+click <strong>Create a new server</strong>.</p>
+<p><img class="img-responsive"src="images/image3.png" alt=""></p>
+</li>
+<li><p>In the <strong>New server</strong> blade, type a <strong>Server Name</strong> that&#39;s unique
+throughout Azure and easy to remember. You&#39;ll need this name later
+when you connect and work with your database.</p>
+</li>
+<li><p>Type a <strong>Server admin login</strong> that&#39;s easy to remember. Then type a
+secure <strong>Password</strong> and type it again in <strong>Confirm password</strong>.</p>
+<blockquote>
+<p><img class="img-responsive"src="images/image4.png" alt=""></p>
+<p><em>Leave <strong>Create V12 Server (latest update)</strong> set to <strong>Yes</strong> to use the
+latest features. The <strong>Location</strong> determines the data center region
+where your server is created</em>.</p>
+</blockquote>
+</li>
+<li><p>Click <strong>OK</strong> to go back to <strong>SQL Database</strong> blade.</p>
+</li>
+<li><p>In the <strong>SQL Database</strong> blade, click <strong>Select source</strong> and then
+click <strong>Blank</strong>.</p>
+<blockquote>
+<p><img class="img-responsive"src="images/image5.png" alt=""></p>
+</blockquote>
+</li>
+<li><p>Go back to the <strong>SQL Database</strong> blade, where <strong>Select Source</strong> now
+shows <strong>Blank Database</strong>. Click <strong>Create</strong> to kick off creation of
+the server and database.</p>
+<blockquote>
+<p><img class="img-responsive"src="images/image6.png" alt=""></p>
+<p>You need to set up a firewall rule on the server that allows
+connections from your client computer&#39;s IP address so you can work
+with the database. This not only helps make sure you can connect, it&#39;s
+a great way to see the area where you can get other details about your
+SQL servers in Azure</p>
+</blockquote>
+</li>
+<li><p>Click <strong>Browse all</strong>, scroll down and then click <strong>SQL servers</strong>,
+and then click the name of the server you created earlier from the
+list of <strong>SQL servers</strong></p>
+<p><img class="img-responsive"src="images/image7.png" alt=""></p>
+</li>
+<li><p>In the database properties blade that appears to the right,
+click <strong>Settings</strong> and then click <strong>Firewall</strong> from the list</p>
+<blockquote>
+<p><img class="img-responsive"src="images/image8.png" alt=""></p>
+<p>The <strong>Firewall settings</strong> show your current <strong>Client IP address</strong>.</p>
+<p><img class="img-responsive"src="images/image9.png" alt=""></p>
+</blockquote>
+</li>
+<li><p>Click <strong>Add Client IP</strong> to have Azure create a rule for that IP
+address, and then click <strong>Save</strong>.</p>
+<blockquote>
+<p><img class="img-responsive"src="images/image10.png" alt=""></p>
+</blockquote>
+</li>
+<li><p>Take note of the name of the <strong>SQL Database server</strong>
+(e.g.: <em>z754axd2q8</em>), as you will need it in the following task.</p>
+</li>
+</ol>
+<p>You now have a SQL Database server on Azure, a firewall rule that
+enables access to the server, and an administrator login.</p>
+<p>###Walking through the sample</p>
+<p>The <strong>Elastic Database with Azure SQL Database - Getting
+Started</strong> sample application illustrates the most important aspects of
+the development experience for sharded applications using Azure SQL
+Elastic Database Tools. It focuses on key use cases for <a href="http://go.microsoft.com/?linkid=9862595/readme.htm">Shard Map
+Management</a>, <a href="http://go.microsoft.com/?linkid=9862596/readme.htm">Data Dependent
+Routing</a> and <a href="http://go.microsoft.com/?linkid=9862597/readme.htm">Multi-Shard
+Querying</a>.</p>
+<p>In this task, you will download and run this sample.</p>
+<ol>
+<li><p>Open Visual Studio and select <strong>File -&gt; New -&gt; Project</strong>.</p>
+<blockquote>
+<p><img class="img-responsive"src="images/image11.png" alt=""></p>
+<p><em>Creating a new project</em></p>
+</blockquote>
+</li>
+<li><p>In the <em>New Project</em> dialog box, click <strong>Online</strong>.</p>
+<blockquote>
+<p><img class="img-responsive"src="images/image12.png" alt=""></p>
+<p><em>Clicking Online</em></p>
+</blockquote>
+</li>
+<li><p>Then click <strong>Visual C#</strong> under <strong>Samples</strong>.</p>
+<blockquote>
+<p><img class="img-responsive"src="images/image13.png" alt=""></p>
+<p><em>Navigating to online C# samples</em></p>
+</blockquote>
+</li>
+<li><p>In the search box, type <strong>Elastic DB</strong> to search for the sample. The
+title <strong>Elastic DB Tools for Azure SQL - Getting Started</strong> appears.</p>
+</li>
+<li><p>Select the sample, choose a name and a location for the new project
+and click <strong>OK</strong> to create the project.</p>
+<blockquote>
+<p><img class="img-responsive"src="images/image14.png" alt=""></p>
+<p><em>Creating the sample project</em></p>
+</blockquote>
+</li>
+<li><p>If the <strong>Download and Install</strong> dialog comes up, click <strong>Install</strong>.</p>
+<blockquote>
+<p><img class="img-responsive"src="images/image15.png" alt=""></p>
+<p><em>Clicking Install in the Download and Install dialog</em></p>
+</blockquote>
+</li>
+<li><p>Open the <strong>App.config</strong> file in the solution for the sample project
+and replace the <em>MyServerName</em> placeholder with your Azure SQL
+database server name and
+the <em>MyUserName</em> and <em>MyPassword</em> placeholders with your login
+information (user name and password).</p>
+<blockquote>
+<p><img class="img-responsive"src="images/image16.png" alt=""></p>
+<p><em>Configuring the sample project</em></p>
+</blockquote>
+</li>
+<li><p>Build and run the application. If asked, please allow Visual Studio
+to <strong>restore the NuGet packages</strong> of the solution. This will
+download the latest version of the Elastic Database Tools client
+libraries from <strong>NuGet</strong>.</p>
+<blockquote>
+<p><img class="img-responsive"src="images/image17.png" alt=""></p>
+<p><em>Running the sample</em></p>
+</blockquote>
+</li>
+<li><p>In the application, type <strong>1</strong> and press <strong><em>enter</em></strong> in order to
+create the shard map manager and add several shards.</p>
+<blockquote>
+<p><strong>Note:</strong> The code illustrates how to work with shards, ranges, and
+mappings in file <strong>ShardMapManagerSample.cs</strong>. You can find more
+information about this topic here: <a href="http://go.microsoft.com/?linkid=9862595/readme.htm">Shard Map
+Management</a>.</p>
+<p>The output will look like this:</p>
+<p><img class="img-responsive"src="images/image18.png" alt=""></p>
+<p><em>Creating the shard map manager and adding several shards</em></p>
+</blockquote>
+</li>
+<li><p>Switch to the <a href="http://portal.azure.com">Azure Portal</a>, navigate to
+the SQL Server created and click on the <strong>SQL</strong>
+<strong>DATABASES</strong> section.</p>
+<blockquote>
+<p><img class="img-responsive"src="images/image19.png" alt=""></p>
+<p>Notice that you have three new databases: the shard manager and one
+for each shard.</p>
+</blockquote>
+</li>
+<li><p>Switch back to the application, type <strong>3</strong> and then
+press <strong><em>enter</em></strong>. This will insert a sample row using
+Data-Dependent routing.</p>
+<blockquote>
+<p><strong>Note:</strong> Routing of transactions to the right shard is shown
+in <strong>DataDependentRoutingSample.cs</strong>. For more details, see <a href="http://go.microsoft.com/?linkid=9862596/readme.htm">Data
+Dependent Routing</a>.</p>
+<p><img class="img-responsive"src="images/image20.png" alt=""></p>
+<p><em>Inserting sample row</em></p>
+</blockquote>
+</li>
+<li><p>Repeat the last step at least three more times so that you have at
+least four rows.</p>
+</li>
+<li><p>Now, type <strong>4</strong> and press <strong><em>enter</em></strong> in the application to execute
+a sample Multi-Shard Query.</p>
+<blockquote>
+<p>Notice the <em>\$ShardName</em> column. It should show that the rows with
+a <em>CustomerId</em> from 0 to 99 are located in
+the<em>ElasticScaleStarterKit_Shard0</em> shard and those with
+a <em>CustomerId</em> from 100 to 199 are located in
+the<em>ElasticScaleStarterKit_Shard1</em> shard.</p>
+<p><strong>Note:</strong> Querying across shards is illustrated in the
+file <strong>MultiShardQuerySample.cs</strong>. For more information,
+see <a href="http://go.microsoft.com/?linkid=9862597/readme.htm">Multi-Shard Querying</a>.</p>
+<p><img class="img-responsive"src="images/image21.png" alt=""></p>
+<p><em>Executing a Multi-Shard Query</em></p>
+</blockquote>
+</li>
+<li><p>Type <strong>2</strong> and press <strong><em>enter</em></strong> in the application to add
+another shard. When prompted for the higher key of the new range,
+press <strong><em>enter</em></strong> to use the default value of <em>300</em>.</p>
+<blockquote>
+<p><strong>Note:</strong> The iterative adition of new empty shards is performed by
+the code in file <strong>AddNewShardsSample.cs</strong>. For more information,
+see <a href="http://go.microsoft.com/?linkid=9862595/readme.htm">Shard Map Management</a>.</p>
+<p><img class="img-responsive"src="images/image22.png" alt=""></p>
+<p><em>Adding a new shard</em></p>
+</blockquote>
+</li>
+<li><p>Switch back to the <a href="http://portal.azure.com">Azure Portal</a>. You
+should see a new database for the new shard
+named<em>ElasticScaleStarterKit_Shard2</em>.</p>
+<blockquote>
+<p><img class="img-responsive"src="images/image23.png" alt=""></p>
+<p><em>Viewing the new database in the portal</em></p>
+</blockquote>
+</li>
+<li><p>Switch back to the application, type <strong>5</strong> and press <strong><em>enter</em></strong>.
+This will drop all the shards and the map manager database.</p>
+<blockquote>
+<p><img class="img-responsive"src="images/image24.png" alt=""></p>
+<p><em>Removing the shards and the map manager</em></p>
+</blockquote>
+</li>
+<li><p>Stop debugging.</p>
+</li>
+</ol>
+<p>You have successfully built and run your first Elastic DB Tools
+application on Azure SQL DB. You can find information on other Elastic
+DB Tools operations in the following links:</p>
+<ul>
+<li><p><strong>Splitting an existing shard</strong>: The capability to split shards is
+provided through the <strong>Split/Merge service</strong>. You can find more
+information about this service here: <a href="http://go.microsoft.com/?linkid=9862795/readme.htm">Split/Merge
+Service</a>.</p>
+</li>
+<li><p><strong>Merging existing shards</strong>: Shard merges are also performed using
+the <strong>Split/Merge service</strong>. For more information, see <a href="http://go.microsoft.com/?linkid=9862795/readme.htm">Split/Merge
+Service</a>.</p>
+</li>
+</ul>
+<p>###Appendix - Cleanup</p>
+<p>In this task you will learn how to delete the SQL Database Server
+created in the first task.</p>
+<ol>
+<li><p>Sign in to the <a href="http://portal.azure.com/readme.htm">Azure Portal</a>.</p>
+</li>
+<li><p>Find the server created above.</p>
+</li>
+<li><p>Select it and then click <strong>DELETE</strong> from the options.</p>
+<blockquote>
+<p><img class="img-responsive"src="images/image25.png" alt=""></p>
+</blockquote>
+</li>
+<li><p>In the confirmation dialog that appears, type the server name and
+the click the <strong>Delete</strong>.</p>
+</li>
+</ol>
+<p>The server will be deleted. Once it is done you should see a
+notification in the bottom bar.</p>
+<p>###Summary</p>
+<p>By completing this lab, you have learned the basic concepts of Azure SQL
+Database Elastic DB Tools: Shard Map Management, Data Dependent Routing
+and Multi-Shard Querying.</p>
+
+      </div>
+  </body>
+</html>

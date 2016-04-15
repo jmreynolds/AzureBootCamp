@@ -1,0 +1,517 @@
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>AzureReadiness: DevCamp</title>
+	  <link rel="stylesheet" href="../../style.css">
+   </head>
+   <body>
+      <div class="container">
+        <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="../../README.htm">Home</a>
+            </div>
+        </header>
+        <div class="jumbotron"><h1 id="hol-machine-learning-credit-risk-analysis">HOL Machine Learning – Credit Risk Analysis</h1></div>
+<p>In this detailed <strong>lab</strong>, we&#39;ll follow the process of <strong>developing a
+predictive analytics</strong> model in <strong>Machine Learning Studio</strong> and then
+deploying it as an Azure Machine Learning web service. We&#39;ll start with
+publicly available <strong>credit risk data</strong>, <strong>develop</strong> and <strong>train</strong> a
+predictive model based on that data, and then <strong>deploy the model</strong> as a
+<strong>web service</strong> that can be used by others for credit risk assessment.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li><p><strong>Client computer with Internet connectivity.</strong></p>
+</li>
+<li><p><strong>Microsoft Account / Live Id</strong></p>
+</li>
+</ul>
+<h2 id="objectives">Objectives</h2>
+<p>To create a credit risk
+assessment solution, we&#39;ll follow these steps through a series of tasks:</p>
+<ul>
+<li><p>Sign up for Machine Learning Workspace using a Microsoft Account</p>
+</li>
+<li><p>Create a new
+experiment with Saved Dataset</p>
+</li>
+<li><p>Train and evaluate the
+models</p>
+</li>
+<li><p>Deploy the web
+service</p>
+</li>
+</ul>
+<!-- -->
+<p>Estimated time to complete this lab: <strong>1-2 Hours</strong></p>
+<h3 id="task-1-login">Task 1: Login</h3>
+<ol>
+<li><p>Launch an <strong>In-Private Browser Window</strong> and navigate to
+<a href="https://studio.azureml.net/readme.htm">https://studio.azureml.net/</a> . The following page should load.</p>
+<p><img class="img-responsive"src="Images/image1.png" alt=""></p>
+</li>
+<li><p>Click on the <strong>Get Started</strong> link, which should pop up a dialog box
+as shown below</p>
+<p><img class="img-responsive"src="Images/image2.png" alt=""></p>
+</li>
+<li><p>We will use the Sign in through a Microsoft Account for access to a
+free Azure ML studio access.</p>
+</li>
+<li><p>Close the Take a tour window.</p>
+<p><img class="img-responsive"src="Images/image3.png" alt=""></p>
+</li>
+</ol>
+<h3 id="task-2-create-a-blank-experiment-and-use-existing-credit-data">Task 2: Create a Blank Experiment and use Existing Credit Data</h3>
+<ol>
+<li><p>Click on the <strong>+NEW</strong> link at the bottom of the page, then Select
+<strong>Experiment</strong> and click on creating a <strong>Blank Experiment</strong>.</p>
+<p><img class="img-responsive"src="Images/image4.png" alt=""></p>
+</li>
+<li><p>Name the Experiment accordingly, the current title shows up as
+<strong><em>Experiment created on &lt;Today’s Date&gt;’</em></strong>. You can edit that
+text by simply selecting and updating it. Once the name is changed,
+click on the <strong>Save</strong> <strong>Save As</strong> button at the bottom of the page</p>
+<p><img class="img-responsive"src="Images/image5.png" alt=""></p>
+</li>
+</ol>
+<h5 id="-tip-"><strong><em>TIP:</em></strong></h5>
+<blockquote>
+<p><em>It&#39;s a good practice to fill in <strong>Summary</strong> and <strong>Description</strong> for
+the experiment in the <strong>Properties</strong> pane. These properties give you
+the chance to document the experiment so that anyone who looks at it
+later will understand your goals and methodology.</em></p>
+</blockquote>
+<ol>
+<li><p>In the Search experiment text box, type the keyword <strong>German,</strong> and
+it should show <strong>German Credit Card Data</strong> under <strong>Saved Datasets.</strong></p>
+<p><img class="img-responsive"src="Images/image6.png" alt=""></p>
+</li>
+<li><p>Drag the German Credit Card UCI Dataset on to the <strong>Canvas</strong> on
+the right.</p>
+</li>
+</ol>
+<p><img class="img-responsive"src="Images/image7.png" alt=""></p>
+<h3 id="task-3-preparing-the-data">Task 3: Preparing the Data</h3>
+<ol>
+<li><p>You can view the first 100 rows of the data and some statistical
+information for the whole dataset by clicking the <strong>output port</strong> of
+the dataset and selecting <strong>Visualize</strong>. Notice that ML Studio has
+already identified the data type for each column. It has also given
+generic headings to the columns because the data file did not come
+with column headings.</p>
+<p><img class="img-responsive"src="Images/image8.png" alt=""></p>
+</li>
+</ol>
+<p><strong>Column headings</strong> are not essential, but they will make it easier to
+work with the data in the model. Also, when we eventually publish this
+model in a web service, the headings will help identify the columns to
+the user of the service. We can add column headings using
+the [Metadata Editor] (<a href="https://msdn.microsoft.com/library/azure/370b6676-c11c-486f-bf73-35349f842a66/readme.htm">https://msdn.microsoft.com/library/azure/370b6676-c11c-486f-bf73-35349f842a66/</a>) module.
+The [Metadata Editor] (<a href="https://msdn.microsoft.com/library/azure/370b6676-c11c-486f-bf73-35349f842a66/readme.htm">https://msdn.microsoft.com/library/azure/370b6676-c11c-486f-bf73-35349f842a66/</a>) module
+is used to change the metadata associated with a dataset. In this case,
+it can provide more friendly names for column headings. To do this,
+we&#39;ll direct  [Metadata Editor] (<a href="https://msdn.microsoft.com/library/azure/370b6676-c11c-486f-bf73-35349f842a66/readme.htm">https://msdn.microsoft.com/library/azure/370b6676-c11c-486f-bf73-35349f842a66/</a>) to
+act on all columns and then provide a list of names to be added to the
+columns.*</p>
+<ol>
+<li><p>In the module palette <strong>(one used before to find German Dataset)</strong>,
+type &quot;<strong>metadata</strong>&quot; in the Search box. You&#39;ll see <strong>Metadata
+Editor</strong> in the module list.</p>
+</li>
+<li><p>Click and drag the Metadata Editor module onto the canvas and drop
+it below the dataset.</p>
+</li>
+<li><p>Connect the dataset to the Metadata Editor: click the output port of
+the dataset, drag to the input port of Metadata Editor, then release
+the mouse button. The dataset and module will remain connected even
+if you move either around on the canvas.</p>
+</li>
+<li><p>With the Metadata Editor still selected, in the <strong>Properties</strong> pane
+to the right of the canvas, click Launch column selector.</p>
+</li>
+<li><p>In the <strong>Select columns</strong> dialog, set the <strong>Begin with</strong> field to
+&quot;<strong>All columns</strong>&quot;.</p>
+</li>
+<li><p>The row beneath Begin with allows you to include or exclude specific
+columns for the Metadata Editor to modify. Since we want to modify
+all columns, delete this row by clicking the minus sign (&quot;-&quot;) to the
+right of the row. The dialog should look like this:</p>
+</li>
+</ol>
+<blockquote>
+<p><img class="img-responsive"src="Images/image9.png" alt=""></p>
+</blockquote>
+<ol>
+<li><p>Click the OK checkmark.</p>
+</li>
+<li><p>Back in the <strong>Properties</strong> pane, look for the New column
+names parameter. In this field, enter a list of names for the 21
+columns in the dataset, separated by commas and in column order. You
+can obtain the columns names from the dataset documentation on the
+UCI website, or for convenience you can copy and paste the
+following:</p>
+<p><strong>status of checking account, duration in months, credit history,
+purpose, credit amount, savings account/bond, present employment
+since, installment rate in percentage of disposable income, personal
+status and sex, other debtors, present residence since, property,
+age in years, other installment plans, housing, number of existing
+credits, job, number of people providing maintenance for, telephone,
+foreign worker, credit risk</strong></p>
+</li>
+<li><p>The <strong>Properties</strong> pane will look like this:</p>
+<p><img class="img-responsive"src="Images/image10.png" alt=""></p>
+<p><em>TIP:</em></p>
+<p><em>If you want to verify the column headings, run the experiment
+(click RUN below the experiment canvas), click the output port of
+the Metadata Editor module, and select View Results. You can view
+the output of any module in the same way to view the progress of the
+data through the experiment.</em></p>
+</li>
+<li><p>The experiment should now look something like this:</p>
+<p><img class="img-responsive"src="Images/image11.png" alt=""></p>
+</li>
+</ol>
+<h3 id="task-4-create-training-and-test-datasets">Task 4: Create Training and Test DataSets</h3>
+<p>The next step of the experiment is to generate separate datasets that
+will be used for training and testing our model. To do this, we use the
+<a href="https://msdn.microsoft.com/library/azure/70530644-c97a-4ab6-85f7-88bf30a8be5f/readme.htm">Split</a>
+module.</p>
+<ol>
+<li><p>Find the <strong>Split</strong> module, drag it onto the canvas, and connect it
+to the last Metadata Editor module.</p>
+</li>
+<li><p>By default, the split ratio is 0.5 and the Randomized split
+parameter is set. This means that a random half of the data will be
+output through one port of the Split module, and half out the other.
+You can adjust these, as well as the Random seed parameter, to
+change the split between training and scoring data. For this lab,
+we&#39;ll leave them as-is.</p>
+<p><strong>*TIP</strong>:*</p>
+<p><em>The split ratio essentially determines how much of the data is
+output through the left output port. For instance, if you set the
+ratio to 0.7, then 70% of the data is output through the left port
+and 30% through the right port.</em></p>
+</li>
+<li><p>We can use the outputs of the Split module however we like, but
+let&#39;s choose to use the <strong>left output as training data</strong> and the
+<strong>right output as scoring data</strong>.</p>
+</li>
+<li><p>The cost of misclassifying a high credit risk as low is 5 times
+larger than the cost of misclassifying a low credit risk as high. To
+account for this, we&#39;ll generate a new dataset that reflects this
+cost function. In the new dataset, each high example is replicated 5
+times, while each low example is not replicated.</p>
+</li>
+<li><p>We can do this replication using <strong>R code</strong>. Find and drag the
+<strong>Execute R Script</strong> module onto the experiment canvas and connect
+the <strong>left output port</strong> of the Split module to the <strong>first input</strong>
+port (&quot;Dataset1&quot;) of the <strong>Execute R Script</strong> module.</p>
+</li>
+<li><p>In the Properties pane, delete the default text in the R Script parameter and enter this script:</p>
+<pre><code>dataset1 &amp;lt;- maml.mapInputPort(1)
+
+data.set&amp;lt;-dataset1\[dataset1\[,21\]==1,\]
+
+pos&amp;lt;-dataset1\[dataset1\[,21\]==2,\]
+
+for (i in 1:5) data.set&amp;lt;-rbind(data.set,pos)
+
+maml.mapOutputPort(&quot;data.set&quot;)
+</code></pre></li>
+</ol>
+<p>We need to do this same replication operation for each output of
+the <a href="https://msdn.microsoft.com/library/azure/70530644-c97a-4ab6-85f7-88bf30a8be5f/readme.htm">Split</a> module
+so that the training and scoring data have the same cost adjustment.</p>
+<ol>
+<li><p>Right-click the <a href="https://msdn.microsoft.com/library/azure/30806023-392b-42e0-94d6-6b775a6e0fd5/readme.htm">Execute R
+Script</a> module
+and select <strong>Copy</strong>.</p>
+</li>
+<li><p>Right-click the experiment canvas and select <strong>Paste</strong>.</p>
+</li>
+<li><p>Connect the first input port of this <a href="https://msdn.microsoft.com/library/azure/30806023-392b-42e0-94d6-6b775a6e0fd5/readme.htm">Execute R
+Script</a> module
+to the right output port of
+the <a href="https://msdn.microsoft.com/library/azure/70530644-c97a-4ab6-85f7-88bf30a8be5f/readme.htm">Split</a> module.</p>
+</li>
+</ol>
+<h5 id="-tip-"><strong><em>TIP:</em></strong></h5>
+<blockquote>
+<p><em>The copy of the Execute R Script module contains the same script as
+the original module. When you copy and paste a module on the canvas,
+the copy retains all the properties of the original.</em></p>
+<p><em>Our experiment now looks something like this:</em></p>
+</blockquote>
+<p><img class="img-responsive"src="Images/image12.png" alt=""></p>
+<h3 id="task-5-train-score-and-evaluate">Task 5: Train, Score and Evaluate</h3>
+<p>In this experiment we want to try different algorithms for our
+predictive model. We&#39;ll create two different types of models and then
+compare their scoring results to decide which algorithm we want to use
+in our final experiment.</p>
+<p>There are a number of models we could choose from. To see the models
+available, expand the <strong>Machine Learning</strong> node in the module palette,
+and then expand <strong>Initialize Model</strong> and the nodes beneath it. For the
+purposes of this experiment, we&#39;ll select the <strong>Two-Class Boosted
+Decision</strong> Trees module. We&#39;ll use the appropriate modules to initialize
+the learning algorithms and use <a href="https://msdn.microsoft.com/library/azure/5cc7053e-aa30-450d-96c0-dae4be720977/readme.htm">Train
+Model</a> modules
+to train the model.</p>
+<h4 id="train-the-model">Train the model</h4>
+<p>Let&#39;s set up the boosted decision tree model:</p>
+<ol>
+<li><p>Find the <a href="https://msdn.microsoft.com/library/azure/e3c522f8-53d9-4829-8ea4-5c6a6b75330c/readme.htm">Two-Class Boosted Decision
+Tree</a> module
+in the module palette and drag it onto the canvas.</p>
+</li>
+<li><p>Find the <a href="https://msdn.microsoft.com/library/azure/5cc7053e-aa30-450d-96c0-dae4be720977/readme.htm">Train
+Model</a> module,
+drag it onto the canvas, and then connect the output of the boosted
+decision tree module to the left input port (&quot;Untrained model&quot;) of
+the <a href="https://msdn.microsoft.com/library/azure/5cc7053e-aa30-450d-96c0-dae4be720977/readme.htm">Train
+Model</a> module.</p>
+</li>
+<li><p>Connect the left output (&quot;Result Dataset&quot;) of the left <a href="https://msdn.microsoft.com/library/azure/30806023-392b-42e0-94d6-6b775a6e0fd5/readme.htm">Execute R
+Script</a> module
+to the right input port (&quot;Dataset&quot;) of the <a href="https://msdn.microsoft.com/library/azure/5cc7053e-aa30-450d-96c0-dae4be720977/readme.htm">Train
+Model</a> module.</p>
+</li>
+</ol>
+<h5 id="-tip-"><strong><em>TIP:</em></strong></h5>
+<p><em>We don&#39;t need two of the inputs and one of the outputs of
+the </em><a href="https://msdn.microsoft.com/library/azure/30806023-392b-42e0-94d6-6b775a6e0fd5/readme.htm"><em>Execute R
+Script</em></a><em> module
+for this experiment, so we&#39;ll just leave them unattached. This is not
+uncommon for some modules.</em></p>
+<ol>
+<li>Select the <a href="https://msdn.microsoft.com/library/azure/5cc7053e-aa30-450d-96c0-dae4be720977/readme.htm">Train
+Model</a> module.
+In the <strong>Properties</strong> pane, click <strong>Launch column selector</strong>,
+select <strong>Include</strong> in the first dropdown, select <strong>column
+indices</strong> in the second dropdown, and enter &quot;21&quot; in the text field
+(you can also select <strong>column names</strong> and enter &quot;Credit Risk&quot;). This
+identifies column 21, the credit risk value, as the column for the
+model to predict.</li>
+</ol>
+<p>This portion of the experiment now looks something like this:</p>
+<p><img class="img-responsive"src="Images/image13.png" alt=""></p>
+<h4 id="score-and-evaluate-the-models">Score and evaluate the models</h4>
+<p>We&#39;ll use the scoring data that was separated out by
+the <strong>Split</strong> module to score our trained models. We can then compare
+the results of the two models to see which generated better results.</p>
+<ol>
+<li><p>Find the <a href="https://msdn.microsoft.com/library/azure/401b4f92-e724-4d5a-be81-d5b0ff9bdb33/readme.htm">Score
+Model</a> module
+and drag it onto the canvas.</p>
+</li>
+<li><p>Connect the left input port of this module to the boosted decision
+tree model (that is, connect it to the output port of the <a href="https://msdn.microsoft.com/library/azure/5cc7053e-aa30-450d-96c0-dae4be720977/readme.htm">Train
+Model</a> module
+that&#39;s connected to the <a href="https://msdn.microsoft.com/library/azure/e3c522f8-53d9-4829-8ea4-5c6a6b75330c/readme.htm">Two-Class Boosted Decision
+Tree</a> module).</p>
+</li>
+<li><p>Connect the right input port of the <a href="https://msdn.microsoft.com/library/azure/401b4f92-e724-4d5a-be81-d5b0ff9bdb33/readme.htm">Score
+Model</a> module
+to the output of the right <a href="https://msdn.microsoft.com/library/azure/30806023-392b-42e0-94d6-6b775a6e0fd5/readme.htm">Execute R
+Script</a> module.</p>
+</li>
+</ol>
+<p>To evaluate the scoring results, we&#39;ll use the <a href="https://msdn.microsoft.com/library/azure/927d65ac-3b50-4694-9903-20f6c1672089/readme.htm">Evaluate
+Model</a> module.</p>
+<ol>
+<li><p>Find the <a href="https://msdn.microsoft.com/library/azure/927d65ac-3b50-4694-9903-20f6c1672089/readme.htm">Evaluate
+Model</a> module
+and drag it onto the canvas.</p>
+</li>
+<li><p>Connect the left input port to the output port of the <a href="https://msdn.microsoft.com/library/azure/401b4f92-e724-4d5a-be81-d5b0ff9bdb33/readme.htm">Score
+Model</a> module
+associated with the boosted decision tree model.</p>
+</li>
+</ol>
+<p>The experiment should now look something like this:</p>
+<p><img class="img-responsive"src="Images/image14.png" alt=""></p>
+<ol>
+<li><p>Click the <strong>RUN</strong> button below the canvas to run the experiment. It
+may take a few minutes. You&#39;ll see a spinning indicator on each
+module to indicate that it&#39;s running, and then a green check mark
+when the module is finished.</p>
+</li>
+<li><p>When all the modules have a check mark, the experiment has
+finished running. To check the results, click the output port of
+the <a href="https://msdn.microsoft.com/library/azure/927d65ac-3b50-4694-9903-20f6c1672089/readme.htm">Evaluate
+Model</a> module
+and select <strong>Visualize</strong>.</p>
+</li>
+</ol>
+<p><em>The </em><a href="https://msdn.microsoft.com/library/azure/927d65ac-3b50-4694-9903-20f6c1672089/readme.htm"><em>Evaluate
+Model</em></a><em> module
+produces curves and metrics that allow you to compare the results of the
+two scored models or a single model. You can view the results as
+Receiver Operator Characteristic (ROC) curves, Precision/Recall curves,
+or Lift curves. Additional data displayed includes a confusion matrix,
+cumulative values for the area under the curve (AUC), and other metrics.
+You can change the threshold value by moving the slider left or right
+and see how it affects the set of metrics.</em></p>
+<ol>
+<li>Click <strong>Scored dataset</strong> to highlight the associated curve and to
+display the associated metrics below. In the legend for the curves,
+&quot;Scored dataset&quot; corresponds to the left input port of the <a href="https://msdn.microsoft.com/library/azure/927d65ac-3b50-4694-9903-20f6c1672089/readme.htm">Evaluate
+Model</a> module -
+in our case, this is the boosted decision tree model.</li>
+</ol>
+<p><img class="img-responsive"src="Images/image15.png" alt=""></p>
+<h5 id="-tip-"><strong><em>TIP:</em></strong></h5>
+<p><em>Each time you run the experiment a record of that iteration is kept in
+the Run History. You can view these iterations, and return to any of
+them, by clicking <strong>VIEW RUN HISTORY</strong> below the canvas. You can also
+click <strong>Prior Run</strong> in the <strong>Properties</strong> pane to return to the
+iteration immediately preceding the one you have open. For more
+information, see </em><a href="https://azure.microsoft.com/en-in/documentation/articles/machine-learning-manage-experiment-iterations/readme.htm"><em>Manage experiment iterations in Azure Machine
+Learning
+Studio</em></a><em>.</em></p>
+<h3 id="task-6-deploy-as-a-web-service">Task 6: Deploy as a Web Service</h3>
+<p>To make this predictive model useful to others, we&#39;ll deploy it as a web
+service on Azure.</p>
+<p>Up to this point we&#39;ve been experimenting with training our model. But
+the deployed service is no longer going to do training - it will be
+generating predictions based on the user&#39;s input. So we&#39;re going to do
+some preparation and then deploy this experiment as a working web
+service that users can access. A user will be able to send a set of
+credit application data to the service, and the service will return the
+prediction of credit risk.</p>
+<p>To do this, we need to:</p>
+<ul>
+<li><p>Convert the <em>training experiment</em> we&#39;ve created into a <em>predictive
+experiment</em></p>
+</li>
+<li><p>Deploy the predictive experiment as a web service</p>
+</li>
+</ul>
+<h4 id="convert-the-training-experiment-to-a-predictive-experiment">Convert the training experiment to a predictive experiment</h4>
+<p>Converting to a predictive experiment involves three steps:</p>
+<ul>
+<li><p><em>Save the model we&#39;ve trained and replace our training modules with
+it</em></p>
+</li>
+<li><p><em>Trim the experiment to remove modules that were only needed for
+training</em></p>
+</li>
+<li><p><em>Define where the web service input and output nodes should be</em></p>
+<ol>
+<li>All three steps can be accomplished by just clicking <strong>Setup Web
+Service</strong> at the bottom of the experiment canvas (select
+the <strong>Predictive Web Service</strong> option). Click <strong>Setup
+Web Service.</strong></li>
+</ol>
+</li>
+</ul>
+<p>When you click <strong>Setup Web Service</strong>, several things happen:</p>
+<ul>
+<li>The model we trained is saved as a <strong>Trained Model</strong> module in the
+module palette to the left of the experiment canvas (you can find it
+in the palette under <strong>Trained Models</strong>).</li>
+</ul>
+<p>Modules that were used for training are <strong>removed</strong>. Specifically:</p>
+<ul>
+<li><p><a href="https://msdn.microsoft.com/library/azure/e3c522f8-53d9-4829-8ea4-5c6a6b75330c/readme.htm"><em>Two-Class Boosted Decision
+Tree</em></a></p>
+</li>
+<li><p><a href="https://msdn.microsoft.com/library/azure/5cc7053e-aa30-450d-96c0-dae4be720977/readme.htm"><em>Train
+Model</em></a></p>
+</li>
+<li><p><a href="https://msdn.microsoft.com/library/azure/70530644-c97a-4ab6-85f7-88bf30a8be5f/readme.htm"><em>Split</em></a></p>
+</li>
+<li><p><em>The second </em><a href="https://msdn.microsoft.com/library/azure/30806023-392b-42e0-94d6-6b775a6e0fd5/readme.htm"><em>Execute R
+Script</em></a><em> module
+that was used for test data</em></p>
+</li>
+</ul>
+<!-- -->
+<ul>
+<li><p><em>The saved trained model is added to the experiment.</em></p>
+</li>
+<li><p><strong>*Web service input</strong> and <strong>Web service output</strong> modules
+are added.*</p>
+</li>
+</ul>
+<h5 id="-note-"><strong>NOTE:</strong></h5>
+<p>The experiment has been saved in two parts: the original training
+experiment, and the new predictive experiment. You can access either one
+using the tabs at the top of the experiment canvas.</p>
+<ol>
+<li>We need to take an additional step with our experiment. Machine
+Learning Studio removed one <a href="https://msdn.microsoft.com/library/azure/30806023-392b-42e0-94d6-6b775a6e0fd5/readme.htm">Execute R
+Script</a> module
+when it removed
+the <a href="https://msdn.microsoft.com/library/azure/70530644-c97a-4ab6-85f7-88bf30a8be5f/readme.htm">Split</a> module,
+but it left the other <a href="https://msdn.microsoft.com/library/azure/30806023-392b-42e0-94d6-6b775a6e0fd5/readme.htm">Execute R
+Script</a> module.
+Since that module was only used for training and testing (it
+provided a weighting function on the sample data), we can now remove
+it and connect <a href="https://msdn.microsoft.com/library/azure/370b6676-c11c-486f-bf73-35349f842a66/readme.htm">Metadata
+Editor</a> to <a href="https://msdn.microsoft.com/library/azure/401b4f92-e724-4d5a-be81-d5b0ff9bdb33/readme.htm">Score
+Model</a>.</li>
+</ol>
+<p>Our experiment should now look like this:</p>
+<blockquote>
+<p><img class="img-responsive"src="Images/image16.png" alt=""></p>
+</blockquote>
+<p>You may be wondering why we left the UCI German Credit Card Data dataset
+in the predictive experiment. The service is going to use the user&#39;s
+data, not the original dataset, so why leave them connected?</p>
+<p>It&#39;s true that the service doesn&#39;t need the original credit card data.
+But it does need the schema for that data, which includes information
+such as how many columns there are and which columns are numeric. This
+schema information is necessary in order to interpret the user&#39;s data.
+We leave these components connected so that the scoring module will have
+the dataset schema when the service is running. The data isn&#39;t used,
+just the schema.</p>
+<ol>
+<li>Run the experiment one last time (click <strong>Run</strong>). If you want to
+verify that the model is still working, click the output of the
+<a href="https://msdn.microsoft.com/library/azure/401b4f92-e724-4d5a-be81-d5b0ff9bdb33/readme.htm">Score
+Model</a> module
+and select <strong>View Results</strong>. You&#39;ll see that the original data is
+displayed, along with the credit risk value (&quot;Scored Labels&quot;) and
+the scoring probability value (&quot;Scored Probabilities&quot;).</li>
+</ol>
+<h4 id="deploy-the-web-service">Deploy the web service</h4>
+<ol>
+<li>To deploy a web service derived from our experiment, click <strong>Deploy
+Web Service</strong> below the canvas. Machine Learning Studio deploys the
+experiment as a web service and takes you to the service dashboard.</li>
+</ol>
+<h5 id="-tip-"><strong><em>TIP:</em></strong></h5>
+<p><em>You can update the web service after you&#39;ve deployed it. For example,
+if you want to change your model, just edit the training experiment,
+tweak the model parameters, and click <strong>Deploy Web Service</strong>. When you
+deploy the experiment again, it will replace the web service, now using
+your updated model.</em></p>
+<p>You can configure the service by clicking the <strong>CONFIGURATION</strong> tab.
+Here you can modify the service name (it&#39;s given the experiment name by
+default) and give it a description. You can also give more friendly
+labels for the input and output columns.</p>
+<blockquote>
+<p><img class="img-responsive"src="Images/image17.png" alt=""></p>
+</blockquote>
+<h4 id="test-the-web-service">Test the web service</h4>
+<ol>
+<li><p>On the <strong>DASHBOARD</strong> page, click the <strong>Test</strong> link under <strong>Default
+Endpoint</strong>. A dialog will pop up and ask you for the input data for
+the service. These are the same columns that appeared in the
+original German credit risk dataset.\
+<img class="img-responsive"src="Images/image18.png" alt=""></p>
+</li>
+<li><p>Enter a set of data and then click <strong>OK</strong>.</p>
+</li>
+</ol>
+<p>The results generated by the web service are displayed at the bottom of
+the dashboard. The way we have the service configured, the results you
+see are generated by the scoring module.</p>
+<h2 id="summary">Summary</h2>
+<p>In this lab you learned how to provision and use a Machine Learning
+    experiment from the Azure ML studio.</p>
+
+      </div>
+  </body>
+</html>

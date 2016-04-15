@@ -1,0 +1,39 @@
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>AzureReadiness: DevCamp</title>
+	  <link rel="stylesheet" href="../../../style.css">
+   </head>
+   <body>
+      <div class="container">
+        <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="../../../README.htm">Home</a>
+            </div>
+        </header>
+        <p>##Setting up the End Solution</p>
+<p>In the lab <a href=".."><strong>Build a web application with ASP.NET MVC using DocumentDB</strong></a> you are given instructions to create a new project that uses Azure DocumentDB. The final code for the app is provided in this folder. In order to be able to run it, you need to configure it.</p>
+<p>To configure the end solution you will need to have created the DocumentDB database and retrieved the <strong>URI</strong> and <strong>PRIMARY KEY</strong> values, as indicated in the section <a href="../#creating-a-documentdb-database-account/readme.htm">Creating a DocumentDB database account</a>.</p>
+<p>Once you have those values, perform the following steps:</p>
+<ol>
+<li><p>Open Visual Studio and then the <strong>Todo</strong> solution.</p>
+</li>
+<li><p>Open the <strong>Web.config</strong> file.</p>
+</li>
+<li><p>Find the <code>appSettings</code> element and update the following values with the appropriate values that correspond to your Azure subscription:</p>
+<ul>
+<li><strong>endpoint</strong>: <strong>URI</strong> value copied from Azure</li>
+<li><strong>authKey</strong>: <strong>PRIMARY KEY</strong> value copied from Azure</li>
+</ul>
+</li>
+<li><p>Save the file.</p>
+</li>
+</ol>
+<p>You should now be ready to run the solution. </p>
+<p>If/when deploying the application to Azure Websites, you could be asked to provide additional information in the Publish Web dialog box if you have not built the application from scratch following the instructions in the lab. </p>
+
+      </div>
+  </body>
+</html>

@@ -1,0 +1,152 @@
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>AzureReadiness: DevCamp</title>
+	  <link rel="stylesheet" href="../../style.css">
+   </head>
+   <body>
+      <div class="container">
+        <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="../../README.htm">Home</a>
+            </div>
+        </header>
+        <div class="jumbotron"><h1 id="introduction-to-the-azure-portal">Introduction to the Azure Portal</h1></div>
+<p>The new Azure portal is an all-in-one, work-anywhere experience. Now you can manage App Service Apps, databases and Visual Studio Team Services projects in a reimagined UX personalized to your work style. It was built from the ground up to put your <em>applications</em> at the center of the experience.</p>
+<p>This unified hub radically simplifies building, deploying, and managing your cloud resources. Imagine a single, easy-to-use console built just for you, your team, your projects. It brings together all of the cloud resources, team members, and life-cycle stages of your application and provides you with a centralized place to plan, develop, test, provision, deploy, scale, and monitor those applications. This approach can help teams embrace a DevOps culture by bringing both development and operations capabilities and perspectives together in a meaningful way.</p>
+<p>The new portal allows each user to transform the portal home page (called the <em>Dashboard</em>) into their own customized dashboard. Stay on top of the things that matter most by pinning them to your <strong>Dashboard</strong>. Re-size parts to show more or less data. Drill in for all the details. And see insights (and opportunities) across apps and resources. New components include the following:</p>
+<ul>
+<li><p><strong>Simplified Resource Management</strong>. Rather than managing standalone resources such as Azure App Service Web Apps, Visual Studio Projects or databases, customers can now create, manage and analyze their entire application as a single resource group in a unified, customized experience, greatly reducing complexity while enabling scale. Today, the new Azure Manager is also available through the latest Azure SDK for customers to automate their deployment and management from any client or device.</p>
+</li>
+<li><p><strong>Integrated billing</strong>. A new integrated billing experience enables developers and IT pros to take control of their costs and optimize their resources for maximum business advantage.</p>
+</li>
+<li><p><strong>Marketplace</strong>. A rich marketplace of applications and services from Microsoft and the open source community. This integrated marketplace of free and paid services enables customers to leverage the ecosystem to be more agile and productive.</p>
+</li>
+<li><p><strong>Visual Studio Team Services</strong>. Microsoft announced key enhancements through the Microsoft Azure Portal. This includes Team Projects supporting greater agility for application lifecycle management and the lightweight editor code-named &quot;Monaco&quot; for modifying and committing Web project code changes without leaving Azure. Also included is Application Insights, an analytics solution that collects telemetry data such as availability, performance and usage information to track an application&#39;s health. Visual Studio integration enables developers to surface this data from new applications with a single click.</p>
+</li>
+</ul>
+<h2 id="creating-a-web-app-sql">Creating a Web App + SQL</h2>
+<p>Historically, managing a resource (a user-managed entity such as a database server, database or Web App) in Microsoft Azure required you to perform operations against one resource at a time. When developing for the cloud today, we are often managing <em>individual resources</em> (databases, storage, cloud services, virtual machines, and so on). It is left up to us, as cloud developers and IT professionals, to piece these resources together in a meaningful way and manage them over time. The Microsoft Azure portal was designed to bring together all of the individual resources of an application into a consolidated view. Resource group is a new concept in Azure that serves as the lifecycle boundary for all of its resources.</p>
+<p>In this task, you will learn about the portal and how to create a new Web App and a SQL Database using it.</p>
+<ol>
+<li><p>Open a browser and browse to <a href="http://portal.azure.com">http://portal.azure.com</a> and log in using your credentials.</p>
+</li>
+<li><p>The first thing you will see is the <strong>Dashboard</strong>. This is your home page, where you can see dynamic data from your resources and all the details you care about. You can customize it as you see fit.</p>
+<blockquote>
+<p><strong>Note:</strong> You can right-click the tiles of the Dashboard to customize it. You can pin or unpin tiles and change their size.</p>
+</blockquote>
+<p><img class="img-responsive"src="Images/startboard.png?raw=true" alt="Startboard"></p>
+<p><em>Your Home Page: The Dashboard</em></p>
+</li>
+<li><p>On the left side, you will see the <strong>Hub Menu</strong>. This is the navigation menu where you can access all of your resources and options. Click the <strong>New</strong> button at the top of the <strong>Hub Menu</strong>.</p>
+<p><img class="img-responsive"src="Images/creating-a-new-resource.png?raw=true" alt="Creating a new resource"></p>
+<p><em>Creating a new resource</em></p>
+</li>
+<li><p>A panel is displayed with different options. You can choose one of the options to create a new resource. Click the <strong>Web + mobile</strong> category to see all the available options.</p>
+<p><img class="img-responsive"src="Images/displaying-resource-types.png?raw=true" alt="Displaying every resource type"></p>
+<p><em>Displaying every resource type</em></p>
+<p>On the next screen, you get all the available options for Web, Mobile Apps and other Azure App Service Apps. Click on the <strong>See all</strong>. You can find ready to use templates.</p>
+<p><img class="img-responsive"src="Images/web-mobile-apps-options.png?raw=true" alt="Azure Marketplace"></p>
+<p><em>Azure Marketplace</em></p>
+</li>
+</ol>
+<ol>
+<li><p>Find the <strong>Web app + SQL</strong> option and then click it.</p>
+<p><img class="img-responsive"src="Images/selecting-website-sql.png?raw=true" alt="Selecting Web App"></p>
+<p><em>Selecting Web app + SQL</em></p>
+<p>Then click <strong>Create</strong>.</p>
+<p><img class="img-responsive"src="Images/create-web-app-sql.png?raw=true" alt="Creating Web app"></p>
+<p><em>Create a new Web app + SQL</em></p>
+<p>A <em>blade</em> is opened. Blades are your entry point to discovering insights, performing actions and building applications. This particular <em>blade</em> collects input from you to create a new <strong>Web App</strong>.</p>
+<blockquote>
+<p><strong>Note:</strong> For more information about <em>blades</em>, you can click the <strong>Tour</strong> tile on your <strong>Dashboard</strong>. On the <strong>Tour</strong> blade, scroll down to the bottom and click <strong>Learn more</strong>. A new blade is opened with further information. You can continue the <strong>Tour</strong> to learn the basics of Blades, Commands, Lenses and more.</p>
+<p><img class="img-responsive"src="Images/tour.png?raw=true" alt="Tour"></p>
+</blockquote>
+</li>
+<li><p>Select <em>App Service Name</em> option, another blade is opened which displays the options to create a new <strong>Web app</strong>. Select a URL for your Web app, for example <em>myMSAzureWebsite</em>. Take into account that this name must be unique. Also fill in the <strong>Create new App Service Plan</strong> or <strong>Select existing</strong> if you already have one.</p>
+<p><img class="img-responsive"src="Images/changing-the-web-hosting-plan.png?raw=true" alt="Creating the App Service Plan"></p>
+<p><em>Creating the App Service Plan</em></p>
+</li>
+<li><p>If you would like to change the Pricing Tier, click on the <strong>Pricing Tier</strong>. In the <em>Choose your pricing tier</em> blade, you can choose the App Service plan that fits your needs.</p>
+<p>App Service plans represent a set of features and capacity that you can share across your App Service Apps, including Web Apps. App Service plans support several pricing tiers (e.g. Free, Shared, Basic, Standard and Premium), each with its own capabilities. There are a couple of differences among these tiers. Plans in the Free and Shared tier provide sites with a shared infrastructure, meaning that your sites share resources with other customers&#39; sites. App Service plans in the Basic, Standard and Premium tiers provider sites with a dedicated infrastructure, meaning that only the app or apps you choose to associate with this plan will be running on those resources. In this tier you can configure your App Service Plan to use one or more virtual machine instances. As we are going to use the default App Service plan, just close this blade.</p>
+<blockquote>
+<p><strong>Note:</strong> For all tiers (except &#39;Shared&#39;) you pay one price for the App Service plan based on the tier and your chosen capacity with no additional charge for each site that uses the plan. Shared App Service plans are different; due to the nature of the shared infrastructure, you are charged separately for each app in the plan. Click <em>Select</em> once you select a relevant plan. This should take you to the previous blade for <em>Web App</em> options.</p>
+</blockquote>
+<p><img class="img-responsive"src="Images/selecting-a-web-hosting-plan.png?raw=true" alt="_Selecting a Pricing Tier"></p>
+<p><em>Selecting a Pricing Tier</em></p>
+</li>
+<li><p>Select a relevant location and click OK.</p>
+</li>
+<li><p>Click <strong>Database</strong> to change the settings for your new database.</p>
+<blockquote>
+<p><strong>Note:</strong> If there are any existing databases asociated to the user, the <strong>Database</strong> blade will show up. Select <strong>Create a new Database</strong>.</p>
+</blockquote>
+<p><img class="img-responsive"src="Images/changing-your-database-settings.png?raw=true" alt="Changing your database settings"></p>
+<p><em>Changing your database settings</em></p>
+</li>
+<li><p>Set a name for the database, e.g. <em>mywebsite-db</em>, and click the <strong>Server</strong> option.</p>
+<blockquote>
+<p><strong>Note:</strong> You can also enter in the <strong>Pricing Tier</strong> section and explore the different pricing tiers.</p>
+</blockquote>
+<p><img class="img-responsive"src="Images/database-settings.png?raw=true" alt="Database Settings"></p>
+<p><em>Database Settings</em></p>
+</li>
+<li><p>Enter the <strong>Server Name</strong>, <strong>Server admin login</strong> and a <strong>Password</strong>. Click <strong>OK</strong> to go back to the <strong>New Database</strong> blade, and click <strong>OK</strong> to close it.</p>
+<p><img class="img-responsive"src="Images/configuring-the-database-server.png?raw=true" alt="Configuring the Database Server"></p>
+<p><em>Configuring the Database Server</em></p>
+</li>
+<li><p>When you create an application that consists of several resources working together (like in this example, a Web app + SQL), it is always created in its own resource group so that you can manage the lifecycle of all related assets. Choose a name for the <strong>Resource Group</strong>, for example <em>MyResourceGroup</em>, and click the <strong>Web app</strong> option.</p>
+<blockquote>
+<p><strong>Note:</strong> Resource group names can only contain letters, numbers, periods, underscores and dashes.</p>
+</blockquote>
+<p><img class="img-responsive"src="Images/new-resource-group.png?raw=true" alt="New Web App"></p>
+<p><em>New Resource Group</em></p>
+</li>
+<li><p>Now you are ready to create your resource group. Click <strong>Create</strong>.</p>
+</li>
+<li><p>On the right top, click bell icon for <strong>Notifications</strong>. You can see status of the creation process in the <strong>Notifications</strong> section. </p>
+<p><img class="img-responsive"src="Images/notifications.png?raw=true" alt="Notifications"></p>
+<p><em>Notifications</em></p>
+</li>
+<li><p>Once the Resource group is successfully created the notification message accordingly displays the relevant message.</p>
+<p><img class="img-responsive"src="Images/created-resource-group-notification.png?raw=true" alt="Created Resource Group Notification"></p>
+<p><em>Created Resource Group Notification</em></p>
+</li>
+<li><p>Notice that the recently created resource group was automatically added to the Dashboard for easy access. </p>
+<p><img class="img-responsive"src="Images/resource-group-added-to-startboard.png?raw=true" alt="Resource Group added to Dashboard"></p>
+</li>
+<li><p>Click on the name of the resource group to open it. You created your new resource group, which includes a Web App, a SQL Server and a SQL Database.</p>
+<p><img class="img-responsive"src="Images/new-resource-group-blade.png?raw=true" alt="New Resource Group Blade"></p>
+<p><em>New Resource Group Blade</em></p>
+<blockquote>
+<p><strong>Note:</strong> It is good practice to cleanup any resources that will not be used. To delete the demo resources just created, follow these steps:</p>
+<ol>
+<li>In the Resource Group, click <strong>DELETE</strong> at the top of the page.</li>
+</ol>
+<p><img class="img-responsive"src="Images/clicking-delete-resource-group.png?raw=true" alt="Clicking Delete Resource Group"></p>
+<p><em>Clicking Delete</em></p>
+<ol>
+<li>In the Confirmation blade that opens, type the name of the resource group and click the <strong>Delete</strong> button.</li>
+</ol>
+<p><img class="img-responsive"src="Images/deleting-resource-group-confirmation.png?raw=true" alt="Deleting Resource Group Confirmation"></p>
+<p><em>Delete Confirmation</em></p>
+<p>After a few moments you should see a notification in the Notifications Hub indicating the resource group was deleted.</p>
+<p><img class="img-responsive"src="Images/notification-after-resource-group-was-deleted.png?raw=true" alt="Notification after Resource Group was deleted"></p>
+<ol>
+<li>Navigate to the Dashboard. Once there, find and right-click the tile for the resource group. Click <strong>unpin from Dashboard</strong>.</li>
+</ol>
+<p><img class="img-responsive"src="Images/unpin-resource-group-from-startboard.png?raw=true" alt="Unpin Resource Group from Dashboard"></p>
+<p><em>Unpinning Resource Group from DashBoard</em>
+The tile is removed.</p>
+</blockquote>
+</li>
+</ol>
+<p><a name="Summary"></a></p>
+<h2 id="summary">Summary</h2>
+<p>The new Azure portal offers an exciting look into the future of DevOps. This is a first-of-its-kind experience which brings together all of the individual resources, people, and life-cycle stages of your application into a unified portal. In this lab, you learned about the portal and how to create a new resource group by building a Web App.</p>
+
+      </div>
+  </body>
+</html>

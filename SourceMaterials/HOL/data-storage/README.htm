@@ -1,0 +1,188 @@
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>AzureReadiness: DevCamp</title>
+	  <link rel="stylesheet" href="../../style.css">
+   </head>
+   <body>
+      <div class="container">
+        <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="../../README.htm">Home</a>
+            </div>
+        </header>
+        <div class="jumbotron"><h1 id="managing-azure-storage">Managing Azure Storage</h1></div>
+<p>In this detailed <strong>demo</strong>, we&#39;ll follow the process of <strong>Creating, Managing Azure Storage Accounts</strong>.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li>Client computer with Internet connectivity.</li>
+<li>Microsoft Account / Live Id</li>
+<li>Microsoft Azure Subscription</li>
+<li>Existing Windows virtual machine</li>
+</ul>
+<h2 id="objectives">Objectives</h2>
+<p>In this hands-on lab, you will learn how to:</p>
+<ul>
+<li>Create and connect to Azure Storage account.</li>
+<li>Understand storage account keys.</li>
+<li>Create a container, upload file, change policy to public/container and download anonymously.</li>
+<li>Copy a blob between two different storage accounts.</li>
+<li>Create an Azure File Share in the portal and mount it in one of the VMs.</li>
+</ul>
+<!-- -->
+<p>###Task 1: Create Storage Account</p>
+<p>In this exercise, you will create a new storage account.</p>
+<ol>
+<li><p>Launch an <strong>In-Private Browser Window</strong> and navigate to
+<a href="https://portal.azure.com">https://portal.azure.com</a> . Enter the account associated with your Microsoft Azure subscription</p>
+</li>
+<li><p>If your account is associated with an organization account and a Microsoft account you may be prompted to choose which one to authenticate with for your Microsoft Azure account. </p>
+</li>
+<li><p>Click <strong>NEW</strong>, Click <strong>Data + Storage</strong>, and then <strong>Storage Account</strong>.</p>
+<p><img class="img-responsive"src="images/daata-storage.png" alt=""></p>
+</li>
+<li><p>Change the <strong>deployment model</strong> to <strong>Resource Manager</strong> and click <strong>Create</strong>.</p>
+<p><img class="img-responsive"src="images/resourcemanager.png" alt=""></p>
+</li>
+<li><p>Specify the following configuration and then click <strong>Create</strong>.</p>
+<p><img class="img-responsive"src="images/createstorageaccount.png" alt=""></p>
+<ul>
+<li>Name: A unique name for your storage account </li>
+<li>Type: Standard-LRS.</li>
+</ul>
+<blockquote>
+<p>Specify the type of storage account to create. A standard storage account includes Blob, Table, Queue, and File storage. A premium storage account currently supports Azure virtual machine disks only.</p>
+<p>Note: The storage account type determines how the storage account is replicated and whether it is a standard storage account or a premium storage account. The default storage account type is Standard-RAGRS, which is a standard storage account with read-access geo-redundant replication.</p>
+</blockquote>
+<ul>
+<li>Diagnostics: Indicate whether you wish to enable Diagnostics for your storage account. Diagnostics include Storage Analytics logging and metrics.</li>
+<li>Resource Group: ARMTraining</li>
+<li>Location: Select region of your choice here.</li>
+</ul>
+<blockquote>
+<p>Note: As of writing of this lab, an Azure storage account has a capacity of 500TB</p>
+</blockquote>
+</li>
+</ol>
+<p>###</p>
+<p>###Task 2: Storage Account Keys</p>
+<ol>
+<li><p>When you create a storage account, Azure generates two 512-bit storage access keys, these keys are used for authentication when the storage account is accessed.</p>
+</li>
+<li><p>Storage account name along with key act like a connection string to the storage account when accessed by various third party tools and programmatically. </p>
+</li>
+<li><p>By providing two storage access keys, Azure enables you to regenerate the keys with no interruption to your storage service or access to that service</p>
+</li>
+<li><p>You can access the storage account keys as follows:</p>
+<p><img class="img-responsive"src="images/storagekeys.png" alt=""></p>
+</li>
+<li><p>As an example, if you were to connect to Azure storage account using .Net, you would typically storage the storage account details as below:</p>
+  <configuration>
+      <appSettings>
+          <add key="StorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=account-name;AccountKey=account-key" />
+      </appSettings>
+  </configuration>
+</li>
+<li><p>As best practice you may want to explore storing the storage account key in Azure key store vault and access it from there.</p>
+</li>
+</ol>
+<p>###</p>
+<p>###Task 3: Working with Azure Storage Explorer</p>
+<ol>
+<li><p>Download Microsoft’s Azure storage explorer from <a href="http://storageexplorer.com/readme.htm">http://storageexplorer.com/</a></p>
+</li>
+<li><p>Once you open the storage explorer, you will see ‘Add Azure Subscription’ option as highlighted below.</p>
+<p><img class="img-responsive"src="images/storageexplorer.png" alt=""></p>
+</li>
+<li><p>Click on Connect to Microsoft Azure. Provide necessary credentials to connect to your subscriptions.</p>
+</li>
+<li><p>Click on the ‘gear’ icon. This will display all the loaded subscriptions against your id.</p>
+<p><img class="img-responsive"src="images/azurestoragesubscription.png" alt=""></p>
+</li>
+<li><p>Select the current subscription of interest and click ‘Apply’.</p>
+</li>
+<li><p>This will load up the storage accounts in that particular subscription.</p>
+<p><img class="img-responsive"src="images/azurestorageaccount.png" alt=""></p>
+</li>
+<li><p>Create a blob container. Select the storage account created in the earlier exercise. Right click on “Blob Containers”, Select ‘Create Blob Container’. Provide a particular name (call it <strong>newcontainer</strong>) in the text box that comes up.</p>
+<p><img class="img-responsive"src="images/azurecreatestorageaccount.png" alt=""></p>
+</li>
+<li><p>Double click on the container created in previous step</p>
+</li>
+</ol>
+<p><img class="img-responsive"src="images/azurestorageuploadaccount.png" alt=""></p>
+<ol>
+<li><p>You can drag and drop file(s) here to upload the files to the container.</p>
+<ul>
+<li><p>Create a new folder on your local device desktop. Let’s call this <strong>MyLocalStore</strong>.</p>
+<p><img class="img-responsive"src="images/azurestorageuploadfolder.png" alt=""></p>
+</li>
+<li><p>Once created double-click to open it.</p>
+</li>
+<li><p>Copy or create a file in this folder.</p>
+</li>
+<li><p>Drag and drop the file that is created to the Azure Storage Explorer Upload location.</p>
+</li>
+</ul>
+</li>
+<li><p>You can share this blob by specifying access control. Right-click the container. Here you can create temporary SAS based access URLs or define access level for blob/container.</p>
+<p><img class="img-responsive"src="images/storagesaskey.png" alt=""></p>
+</li>
+<li><p>Let’s select ‘public access to container/blobs’ option.</p>
+<p><img class="img-responsive"src="images/publicaccess.png" alt=""></p>
+</li>
+<li><p>Right-click the blob and select ‘Copy URL to Clipboard’. </p>
+<p><img class="img-responsive"src="images/copy-clipboard.png" alt=""></p>
+</li>
+<li><p>Open a new incognito browser window and paste the URL. You should be able to see the html file. You can change the access level to ‘No public access’ and refresh the browser instance. You will get resource not found message.</p>
+</li>
+</ol>
+<p>###</p>
+<p>###Task 4: BLOB copy between storage accounts</p>
+<ol>
+<li><p>Back in the portal, let us create a second storage account. Give the name of the storage account “armtrainingstore2<your-name>”, suffix with your name to keep it unique.</p>
+<p><img class="img-responsive"src="images/azurestorageaccountscreen.png" alt=""></p>
+</li>
+<li><p>Open the Microsoft Azure Storage Explorer, browse to the file we uploaded earlier. Right-click and select copy. Please note that in your case the name/type of file could be different.</p>
+<p><img class="img-responsive"src="images/copyblob.png" alt=""></p>
+</li>
+<li><p>Browse to blobcontainer2, and select ‘paste’.</p>
+<p><img class="img-responsive"src="images/pasteblob.png" alt=""></p>
+</li>
+<li><p>Click on Refresh to view the file that is copied to this container.</p>
+<p><img class="img-responsive"src="images/blobpasted.png" alt=""></p>
+<blockquote>
+<p>Note: Blob copy between storage accounts is pretty frequently required, it’s now relatively much easier to do this from storage explorer as compared to the number of steps required to achieve the same using PowerShell script. The number of steps are exactly the same even if the storage accounts were to belong to totally different subscriptions</p>
+</blockquote>
+</li>
+</ol>
+<p>###</p>
+<p>###Task 5: Create an Azure File Share in the portal and mount it in one of the VMs created earlier</p>
+<ol>
+<li><p>Navigate through the Azure storage account as shown below:</p>
+<p><img class="img-responsive"src="images/flieshareazure.png" alt=""></p>
+</li>
+<li><p>Add the following details for ‘File Share’</p>
+<p><img class="img-responsive"src="images/fliesharename.png" alt=""></p>
+</li>
+<li><p>Click on ‘Create’ button.</p>
+</li>
+<li><p>Create a directory.</p>
+<p><img class="img-responsive"src="images/createdirectory.png" alt=""></p>
+</li>
+<li><p>Once the directory is created, you can click on ‘connect’ and copy network file share path and try to access it. You will be prompted with user-name and password. Use the storage account name and access-key as credentials.</p>
+<p><img class="img-responsive"src="images/connectfileshare.png" alt=""></p>
+</li>
+<li><p>You can as well execute the complete ‘net use’ command and mount the file share.</p>
+<p><img class="img-responsive"src="images/finaloutput.png" alt=""></p>
+</li>
+</ol>
+<p>###</p>
+<p>##Summary</p>
+<p>In this demo you learned how to create Azure Storage Account, Keys, Containers and Blobs its policies. Copy between storage accounts and finally setup Azure File Share using the portal.</p>
+
+      </div>
+  </body>
+</html>

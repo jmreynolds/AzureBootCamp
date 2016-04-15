@@ -1,0 +1,148 @@
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>AzureReadiness: DevCamp</title>
+	  <link rel="stylesheet" href="../../style.css">
+   </head>
+   <body>
+      <div class="container">
+        <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="../../README.htm">Home</a>
+            </div>
+        </header>
+        <div class="jumbotron"><h1 id="setting-up-your-environment-for-the-labs">Setting up your environment for the labs</h1></div>
+<p>In this lab you will find the prerequisites and steps to help you set up your computer. After completing the lab you will have a working environment, ready for the other labs.</p>
+<h2 id="configure-your-computer">Configure your computer</h2>
+<h3 id="install-visual-studio-ultimate-2015-preview">Install Visual Studio Ultimate 2015 Preview</h3>
+<p>To run these Introduction to Microsoft Azure labs, <strong>Visual Studio 2015 Preview</strong> is required. It can be downloaded and installed from <a href="http://www.visualstudio.com/en-us/downloads/visual-studio-2015-downloads-vs.aspx">here</a>.</p>
+<p>Alternatively, you can use Visual Studio 2013, provided the following have been installed:</p>
+<ul>
+<li><p>Visual Studio 2013 Update 3 (or higher) (<a href="http://www.visualstudio.com/en-us/downloads/download-visual-studio-vs/readme.htm">download</a>).</p>
+</li>
+<li><p>Azure SDK for Visual Studio 2013 (<a href="http://go.microsoft.com/fwlink/?linkid=324322&amp;clcid=0x409/readme.htm">download</a>).</p>
+<blockquote>
+<p><strong>Note 1:</strong> Depending on how many of the SDK dependencies you already have on your machine, installing the SDK could take a long time, from several minutes to a half hour or more.</p>
+<p><strong>Note 2:</strong> While not required to complete this lab, the <a href="http://vswebessentials.com/download/readme.htm">Web Essentials</a> extension for Visual Studio improves the HTML and JavaScript editing experience by adding in features like missing Angular attribute detection and improved JavaScript IntelliSense.</p>
+<p><strong>Note 3:</strong> Visual Studio is only required if you will be executing the <a href="../get-started-with-websites-and-asp-net/readme.htm">Get started with Azure Websites and ASP.NET</a>, <a href="../build-single-page-app-with-webapi-and-angular/readme.htm">Build a Single Page Application (SPA) with ASP.NET Web API and Angular.js using Azure Active Directory to log in users</a> or <a href="../build-web-app-using-documentdb/readme.htm">Build a web application with ASP.NET MVC using DocumentDB</a> labs.</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="install-azure-sdk-for-net">Install Azure SDK for .Net</h3>
+<p>The Microsoft Azure SDK for .Net is available through the <a href="http://www.microsoft.com/web/downloads/platform.aspx">Microsoft Web Platform Installer</a>. For the purposes of this lab you need version 2.3 or higher.</p>
+<p>To do so, follow these instructions:</p>
+<ol>
+<li>Open Microsoft Web Platform Installer.</li>
+<li>Find the row for <strong>Microsoft Azure SDK for .Net</strong> corresponding to the version of Visual Studio you have installed.  Click the <strong>Add</strong> button. </li>
+<li>Click <strong>Install</strong>.</li>
+</ol>
+<p><img class="img-responsive"src="images/install-microsoft-azure-sdk-for-net.png?raw=true" alt="Install Microsoft Azure SDK for .Net"></p>
+<p><em>Install Microsoft Azure SDK for .Net for your version of Visual Studio</em></p>
+<blockquote>
+<p><strong>Note:</strong> Azure SDK for .Net is only required if you will be executing the <a href="../get-started-with-websites-and-asp-net/readme.htm">Get started with Azure Websites and ASP.NET</a>, <a href="../build-single-page-app-with-webapi-and-angular/readme.htm">Build a Single Page Application (SPA) with ASP.NET Web API and Angular.js using Azure Active Directory to log in users</a> or <a href="../build-web-app-using-documentdb/readme.htm">Build a web application with ASP.NET MVC using DocumentDB</a> labs.</p>
+</blockquote>
+<p>####Install Windows PowerShell
+Windows 8 comes with PowerShell 3.0 installed, but that may not be the case in other (earlier) versions of Windows. You can check whether PowerShell is installed and if the version will work for the purposes of this lab by following these steps:</p>
+<ol>
+<li><p>From the <strong>Start</strong> screen, begin typing <strong>power</strong>. </p>
+<p> This returns a scoped list of apps that includes <strong>Windows PowerShell</strong>. If Windows PowerShell does not appear in the search results, you can skip the next steps and proceed to installing it using the link provided below.</p>
+</li>
+<li><p>To open the console, click <strong>Windows PowerShell</strong>.</p>
+</li>
+<li><p>Execute the following command:</p>
+<pre><code class="lang-PowerShell"> $PSVersionTable.PSVersion
+</code></pre>
+<p> The execution of this command should return 3.0 or higher. </p>
+<p> <img class="img-responsive"src="images/verifying-powershell-version.png?raw=true" alt="Verifying Powershell version"></p>
+<p> <em>Verifying the Windows PowerShell version</em></p>
+</li>
+</ol>
+<p>If <strong>Windows PowerShell</strong> is not installed on your machine or you have an older version, download a newer version from the <a href="https://technet.microsoft.com/en-us/scriptcenter/dd742419.aspx">Windows PowerShell Scripting</a> page.</p>
+<blockquote>
+<p><strong>Note:</strong> Windows PowerShell is only required for the <a href="../create-virtual-machine#creating-a-vm-using-powershell/readme.htm">Create Virtual Machine using PowerShell</a> task of the <a href="../create-virtual-machine/readme.htm">Infrastructure As A Service in Microsoft Azure</a> lab.</p>
+</blockquote>
+<h3 id="install-microsoft-azure-powershell-cmdlets">Install Microsoft Azure PowerShell Cmdlets</h3>
+<p>The <strong>Azure PowerShell</strong> modules and all dependencies are available through the <a href="http://www.microsoft.com/web/downloads/platform.aspx">Microsoft Web Platform Installer</a>. To install it, follow these instructions:</p>
+<ol>
+<li>Open Microsoft Web Platform Installer.</li>
+<li>Find the row for <strong>Microsoft Azure PowerShell with Microsoft Azure SDK</strong> and click the <strong>Add</strong> button. </li>
+<li>Click <strong>Install</strong>.</li>
+</ol>
+<p><img class="img-responsive"src="images/install-ms-azure-powershell.png?raw=true" alt="Install MS Azure Powershell in MS WebPlatform Installer"></p>
+<p><em>Install Microsoft Azure PowerShell</em></p>
+<blockquote>
+<p><strong>Note:</strong> The Microsoft Azure PowerShell Cmdlets are only required for the <em>Create Virtual Machine using PowerShell</em> task of the <a href="../create-virtual-machine/readme.htm">Infrastructure As A Service in Microsoft Azure</a> lab.</p>
+</blockquote>
+<p>###Install the Azure Cross-Platform Command-Line Interface</p>
+<p>There are two ways to install the <strong>Azure Cross-Platform Command-Line Interface</strong> (or xplat-cli): using installer packages for Windows and OS X, or if Node.js is installed on your system, the <strong>npm</strong> command. </p>
+<p>Once the xplat-cli has been installed, you will be able to use the <strong>azure</strong> command from your command-line interface (Bash, Terminal, Command prompt) to access the xplat-cli commands.</p>
+<p>In order to install the <strong>Azure Cross-Platform Command-Line Interface</strong> using the installer, just download the package for your platform and follow the instructions. The following installer packages are available:</p>
+<ul>
+<li><p><a href="http://go.microsoft.com/?linkid=9828653&amp;clcid=0x409/readme.htm">Windows installer</a></p>
+</li>
+<li><p><a href="http://go.microsoft.com/fwlink/?linkid=252249&amp;clcid=0x409/readme.htm">OS X installer</a></p>
+<blockquote>
+<p><strong>Note:</strong> If Node.js is already installed on your system, use the following command to install the xplat-cli:</p>
+<pre><code>npm install azure-cli -g
+</code></pre><p><strong>Note:</strong> The Azure Cross-Platform Command-Line Interface is only required for the <em>Create Virtual Machine using Cross-Platform Command Line Interface</em> task of the <a href="../create-virtual-machine/readme.htm">Infrastructure As A Service in Microsoft Azure</a> lab.</p>
+</blockquote>
+</li>
+</ul>
+<p>To ensure that you have the <strong>Azure Cross-Platform Command-Line Interface</strong> correctly installed, open a <strong>Command Prompt</strong> and execute the following command:</p>
+<pre><code>```
+azure
+```
+
+You should get a message similar to the following:
+
+```
+info:             _    _____   _ ___ ___
+info:            /_\  |_  / | | | _ \ __|
+info:      _ ___/ _ \__/ /| |_| |   / _|___ _ _
+info:    (___  /_/ \_\/___|\___/|_|_\___| _____)
+info:       (_______ _ _)         _ ______ _)_ _
+info:              (______________ _ )   (___ _ _)
+info:
+info:    Microsoft Azure: Microsoft&#39;s Cloud Platform
+info:
+info:    Tool version 0.8.13
+help:
+help:    Display help for a given command
+help:      help [options] [command]
+help:
+help:    Log in to an Azure subscription using Active Directory. Currently, the user can login only via Microsoft organizational account
+help:      login [options]
+help:
+help:    Log out from Azure subscription using Active Directory. Currently, the user can log out only via Microsoft organizational account
+help:      logout [options] [username]
+help:
+help:    Open the portal in a browser
+help:      portal [options]
+help:
+help:    Commands:
+help:      account        Commands to manage your account information and publish settings
+help:      config         Commands to manage your local settings
+help:      hdinsight      Commands to manage your HDInsight accounts
+help:      mobile         Commands to manage your Mobile Services
+help:      network        Commands to manage your Networks
+help:      sb             Commands to manage your Service Bus configuration
+help:      service        Commands to manage your Cloud Services
+help:      site           Commands to manage your Web Sites
+help:      sql            Commands to manage your SQL Server accounts
+help:      storage        Commands to manage your Storage objects
+help:      vm             Commands to manage your Virtual Machines
+help:
+help:    Options:
+help:      -h, --help     output usage information
+help:      -v, --version  output the application version
+```
+</code></pre><h3 id="clone-or-download-content-of-this-github-repository-optional-but-recommended-">Clone or download content of this GitHub repository (optional but recommended)</h3>
+<p>The labs provided have a combination of text documentation and sample code. In order to have all documentation and all necessary sample files locally on your computer, we strongly recommend you to clone (using <a href="http://git-scm.com/readme.htm">Git</a>) or <a href="https://github.com/Azure-Readiness/HOL-Intro-to-Azure/archive/master.zip">download</a> all content in this repository locally on your computer. If you download the zip archive, you will need to <a href="http://blogs.msdn.com/b/delay/p/unblockingdownloadedfile.aspx">unblock</a> the zip file before extracting it.</p>
+<h2 id="summary">Summary</h2>
+<p>You have Visual Studio 2015 Preview, or Visual Studio 2013 with Update 3 (or higher) and the <em>Azure SDK for Visual Studio 2013</em>, installed on your computer.</p>
+
+      </div>
+  </body>
+</html>

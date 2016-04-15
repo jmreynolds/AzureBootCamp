@@ -1,0 +1,1052 @@
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>AzureReadiness: DevCamp</title>
+	  <link rel="stylesheet" href="../../style.css">
+   </head>
+   <body>
+      <div class="container">
+        <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="../../README.htm">Home</a>
+            </div>
+        </header>
+        <div class="jumbotron"><h1 id="infrastructure-as-a-service-in-microsoft-azure">Infrastructure as a Service in Microsoft Azure</h1></div>
+<p>The ability to create a virtual machine on demand, whether a standard image or from one you supply, can be very useful. This approach, commonly known as Infrastructure as a Service (IaaS), is what Azure Virtual Machines provides.</p>
+<p>To create a VM, you specify which VHD to use and the VM&#39;s size. You then pay for the time that the VM is running. You pay by the minute and only while it&#39;s running, though there is a minimal storage fee for keeping the VHD available. Azure offers a gallery of stock VHDs (called &quot;images&quot;) that contain a bootable operating system to start from. These include Microsoft and partner options, such as Windows Server and Linux, SQL Server, Oracle and many more. You&#39;re free to create VHDs and images and then upload them yourself. You can even upload VHDs that contain only data and then access them from your running VMs.</p>
+<p>This quite general approach to cloud computing can be used to address many different issues:</p>
+<ul>
+<li><strong>Dev/Test</strong> - You might use them to create an inexpensive development and test platform that you can shut down when you&#39;ve finished using it. You might also create and run applications that use whatever languages and libraries you like. Those applications can use any of the data management options that Azure provides, and you can also choose to use SQL Server or another DBMS running on one or more virtual machines.</li>
+<li><strong>Move Applications to Azure (Lift-and-shift)</strong> - &quot;Lift-and-shift&quot; refers to moving your application much like you&#39;d use a forklift to move a large object. You &quot;lift&quot; the VHD from your local datacenter, and &quot;shift&quot; it to Azure and run it there. You will typically have to do some work to remove dependencies on other systems. If there are too many, you may choose option 3 instead.</li>
+<li><strong>Extend your Datacenter</strong> - Use Azure VMs as an extension of your on-premises datacenter, running SharePoint or other applications. To support this, it&#39;s possible to create Windows domains in the cloud by running Active Directory in Azure VMs. You can use Azure Virtual Network to tie together your local And Azure networks.</li>
+</ul>
+<p>In this lab, you will learn how to create virtual machines using different options provided by Azure. You will also add data disks, access them and install VM extensions.</p>
+<p>This lab includes the following tasks:</p>
+<ul>
+<li><p><a href="#creating-a-vm-using-portal"><strong>Creating a Virtual Machine using Azure Portal</strong></a></p>
+<p>  In this task you will create a Windows virtual machine using an existing image from the Azure Management Portal.</p>
+</li>
+<li><p><a href="#creating-a-vm-using-cli"><strong>Creating a Virtual Machine using the Cross-Platform Command-Line Interface</strong></a> </p>
+<p>  In this task you will use the command line cross-platform tools to: <a href="#connect-to-your-azure-subscription-xplatcli">configure the subscription in the command line using a publishsettings file</a>, <a href="#create-vm-xplatcli">create a Linux virtual machine using an existing image</a>, <a href="#attach-disk-xplatcli">attach an empty data disk to it</a>, <a href="#connect-to-vm-xplatcli">connect to the virtual machine using PuTTY</a> and <a href="#configure-datadisk-xplatcli">configure the attached data disk</a>.</p>
+</li>
+<li><p><a href="#creating-a-vm-using-powershell"><strong>Creating a Virtual Machine using PowerShell</strong></a>:</p>
+<p>  In this task you will use the PowerShell command line to <a href="#configure-subscription-powershell">configure the azure subscription using Azure AD</a>, <a href="#create-vm-powershell">create a Windows virtual machine</a>, <a href="#attach-disk-powershell">attach an empty datadisk to the vm</a>, <a href="#install-vm-extension-powershell">install a VM Extension</a>, and <a href="#connect-to-vm-powershell">connect to the vm via a generated rdp file</a> to <a href="#configure-datadisk-powershell">configure the attached datadisk in the virtual machine</a>.</p>
+</li>
+<li><p><a href="#creating-a-vm-using-Runbook"><strong>Creating a Virtual Machine using a Runbook</strong></a></p>
+<p>  In this task you will <a href="#runbook-setup">ensure some prerequisites are present</a> like <a href="#creating-new-organizational-account">creating an organizational account</a>, <a href="#create-automation-account">create an automation account</a>, <a href="#create-empty-runbook">create an empty runbook</a>, <a href="#edit-runbook">edit the runbook to create a virtual machine and publish it</a>, <a href="#create-assets">create the necessary assets for the runbook execution</a>, <a href="#start-runbook">start the runbook</a> and once it finishes <a href="#verify-vm-runbook">verify that the vm was created in the portal</a>.</p>
+</li>
+<li><p><a href="#creating-a-vm-using-armtemplates"><strong>Creating a Virtual Machines with IIS and SQL VM using ARM Templates</strong></a></p>
+<p>  In this task you will use ARM template to create one or two Windows Server 2012R2 VM(s) with IIS configured using DSC. It also installs one SQL Server 2014 standard edition VM, a VNET with two subnets, NSG, loader balancer, NATing and probing rules.</p>
+</li>
+<li><p><a href="#cleanup">Appendix - Cleanup</a></p>
+</li>
+</ul>
+<p>This is a long lab which shows how you can perform similar actions using the different tools available, so you can choose which task you want to execute based on the explanations above. It&#39;s recommended that you run <a href="#creating-a-vm-using-cli">Creating a Virtual Machine using using the Cross-Platform Command-Line Interface</a> and <a href="#creating-a-vm-using-powershell">Creating a Virtual Machine using PowerShell</a>, as these provide a good coverage of many tasks performed on a virtual machine, but you can choose to execute all or the ones that most interest you.</p>
+<p><a name="creating-a-vm-using-portal"></a></p>
+<h2 id="creating-a-virtual-machine-using-azure-portal">Creating a Virtual Machine using Azure Portal</h2>
+<p>In this task you will create a Virtual Machine in Azure Portal.</p>
+<ol>
+<li><p>Sign in to the <a href="https://portal.azure.com/readme.htm">Azure Management Portal</a>.</p>
+</li>
+<li><p>On the Left Side bar, click <strong>+ NEW</strong> and then click on <strong>See all</strong>.</p>
+<p> <img class="img-responsive"src="images/click-new-and-everything.png?raw=true" alt="Creating VM - Click New and Everything"></p>
+<p> <em>Creating a VM</em> </p>
+</li>
+<li><p>Click <strong>Compute</strong> and then click the <strong>Windows Server</strong> tile.</p>
+<p> <img class="img-responsive"src="images/creating-compute-vm-winserver.png?raw=true" alt="Creating VM - Click Virtual Machines and Windows Server"></p>
+<p> <em>Creating a VM - Click Virtual Machines then the Windows Server tile</em></p>
+</li>
+<li><p>A new blade opens with the different images available for <strong>Windows Server</strong>. Find and click <strong>Windows Server 2012 R2 Datacenter</strong>.</p>
+<p> <img class="img-responsive"src="images/creating-vm-select-image.png?raw=true" alt="Creating VM Select image"></p>
+<p> <em>Creating a VM - Select the image to use</em></p>
+</li>
+<li><p>In the <strong>Windows Server 2012 R2 Datacenter</strong> blade, Select <strong>&#39;Resource Manager&#39;</strong> from dropdown <strong>select a deployment model</strong>, and then click <strong>Create</strong>.</p>
+<p> <img class="img-responsive"src="images/creating-vm-confirm-image.png?raw=true" alt="Creating VM Confirm image"></p>
+<p> <em>Creating a VM - Click Create to confirm the use of this image</em></p>
+</li>
+<li><p>On the <strong>Create Virtual Machine</strong> blade that opens, enter: </p>
+<ul>
+<li><strong>Name</strong>: virtual machine name (e.g. testvm)</li>
+<li><strong>User Name</strong>: administrator user for the virtual machine (e.g. adminUser)</li>
+<li><strong>Password</strong>: unique password for the administrator account</li>
+<li><strong>Subscription</strong>: Select if you have multiple subscriptions</li>
+<li><strong>Resource</strong>: New or Existing (e.g. create-vm)</li>
+<li><p><strong>Location</strong>: select the location for the virtual machine. (e.g. West US)</p>
+<p><img class="img-responsive"src="images/create-vm-resource-basic-config.png?raw=true" alt="Creating a VM - basic configuration"></p>
+<p><em>Creating a VM - Basic Configuration</em></p>
+</li>
+<li><p><strong>Size</strong>: select the size of virtual machine needed. (Select <strong>See All</strong> for checking all sizes and details)</p>
+<p><img class="img-responsive"src="images/create-vm-resource-choose-size.png?raw=true" alt="Creating a VM - choose size"></p>
+<p><em>Creating a VM - Types of Sizes</em></p>
+</li>
+<li><p><strong>Disk Type</strong>: select the disk size. (e.g. Standard/Premium(SSD))</p>
+</li>
+<li><strong>storage account</strong>: storage account details(if existing select the storage account at specified location or create new)</li>
+<li><strong>virtual network</strong>: virtual network for the virtual machine to create</li>
+<li><strong>Subnet</strong>: subnets under one Virtual network</li>
+<li><p><strong>Public IP address</strong>: public IP address</p>
+<p><img class="img-responsive"src="images/create-vm-resource-settings-config.png?raw=true" alt="Creating a VM - Settings Optional features"></p>
+<p><em>Creating a VM - Settings</em></p>
+</li>
+<li><p><strong>Summary</strong>: virtual machine summary details before you click on create.</p>
+<p><img class="img-responsive"src="images/create-vm-summary.png?raw=true" alt="Creating a VM - VM Summary"></p>
+<p><em>Creating a VM - Summary</em></p>
+<blockquote>
+<p><strong>Note:</strong> Premium storage, available for DS-series virtual machines in certain regions. For details, see <a href="http://azure.microsoft.com/en-us/documentation/articles/storage-premium-storage-preview-portal/readme.htm">Premium Storage: High-Performance Storage for Azure Virtual Machine Workloads</a>.</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p>Click <strong>OK</strong>.</p>
+</li>
+<li><p>The VM will start being created. You can monitor the creation progress on the <strong>Notifications</strong>. As this can take a few minutes, this task ends here. </p>
+<p> <img class="img-responsive"src="images/creating-vm-monitor-progress-on-the-notifi.png?raw=true" alt="Creating a VM - Monitor progress on the Notifications"></p>
+<p> <em>Creating a VM - Monitor progress in the Notifications Hub</em></p>
+<blockquote>
+<p><strong>Note:</strong> After the VM is created, the Virtual Machine blade will open. A pin for the VM (e.g. azureVM) is also added to the <strong>Startboard</strong>. You can use it to access the VM.  </p>
+<p><img class="img-responsive"src="images/creating-vm-pin-in-startboard-after-creation.png?raw=true" alt="Creating a VM - A pin in the startboard exists after creation"></p>
+<p><em>Creating a VM - A pin was created in the Startboard</em></p>
+<p>Once the virtual machine has been created you can attach new or existing data disks to the Virtual Machine. See <a href="https://msdn.microsoft.com/library/azure/dn790303.aspx">About Virtual Machine Disks in Azure</a> for more information. </p>
+<p><img class="img-responsive"src="images/create-vm-details-created.png?raw=true" alt="Creating a VM - A pin in the startboard exists after creation"></p>
+<p><em>Virtual Machine details after Creation</em></p>
+</blockquote>
+</li>
+</ol>
+<p><a name="creating-a-vm-using-cli"></a></p>
+<h2 id="creating-a-virtual-machine-using-the-cross-platform-command-line-interface">Creating a Virtual Machine using the Cross-Platform Command-Line Interface</h2>
+<p>In this task you will use the <strong>Azure Cross-Platform Command-Line Interface</strong> (xplat-cli) to create a Linux virtual machine and attach an empty disk to it. After that you will connect to the vm and configure the disk.</p>
+<p><a name="connect-to-your-azure-subscription-xplatcli"></a>
+You will start by configuring your Azure subscription in the xplat-cli.</p>
+<p>While some commands provided by the xplat-cli will work without an Azure subscription, most commands require one. To configure the xplat-cli to work with your subscription, you can either download and use a publish settings file or log in to Azure using an organizational account. When you log in, Azure Active Directory is used to authenticate the credentials.</p>
+<p>To help you choose the authentication method most appropriate for your needs, consider the following:</p>
+<ul>
+<li><p>The login method can make it easier to manage access to subscriptions but may disrupt automation, as the credentials may time out and require you to log in again.</p>
+</li>
+<li><p>The publish settings file method installs a certificate that allows you to perform management tasks for as long as the subscription and the certificate are valid. This method makes it easier to use automation for long-running tasks. After you download and import the information, you don&#39;t need to provide it again. However, this method makes it harder to manage access to a subscription since anyone with access to the certificate can manage the subscription.</p>
+</li>
+</ul>
+<p>For more information about authentication and subscription management, see <a href="http://msdn.microsoft.com/en-us/library/windowsazure/hh531793.aspx#BKMK_AccountVCert">&quot;What&#39;s the difference between account-based authentication and certificate-based authentication&quot;</a>.</p>
+<p>In order to use the publish settings file method, perform the following steps:</p>
+<ol>
+<li><p>Open a <strong>Command prompt</strong> if there is not already one open, and run the following command to download the publish settings file for your account:</p>
+<pre><code> azure account download
+</code></pre><p> This will open your default browser and prompt you to sign in to the Azure Management Portal. After signing in, a <code>.publishsettings</code> file will be downloaded. Make note of where this file is saved.</p>
+</li>
+</ol>
+<ol>
+<li><p>Next, import the <code>.publishsettings</code> file by running the following command, replacing <code>[path to .publishsettings file]</code> with the path to your <code>.publishsettings</code> file:</p>
+<pre><code> azure account import [path to .publishsettings file]
+</code></pre><blockquote>
+<p><strong>Note:</strong> When you import publish settings, the information to access your Azure subscription is stored in a <code>.azure</code> directory located in your <code>user</code> directory. Your <code>user</code> directory is protected by your operating system; however, it is recommended that you take additional steps to encrypt your <code>user</code> directory. You can do so in the following ways:</p>
+</blockquote>
+<p> &gt;</p>
+<blockquote>
+<ul>
+<li>On Windows, modify the directory properties or use BitLocker.</li>
+<li>On Mac, turn on FileVault for the directory.</li>
+<li>On Ubuntu, use the Encrypted Home directory feature. Other Linux distributions offer equivalent features.</li>
+</ul>
+</blockquote>
+</li>
+<li><p>After importing your publish settings, you should delete the <code>.publishsettings</code> file, as it is no longer required by the Command-Line Tools and presents a security risk as it can be used to gain access to your subscription.</p>
+<blockquote>
+<p><strong>Note:</strong> If you prefer using the login method, use the following command:</p>
+<pre><code>azure login -u username -p password
+</code></pre></blockquote>
+<p> <a name="create-vm-xplatcli"></a></p>
+<p> Now that you have configured your Azure subscription in the command line you will proceed to create the virtual machine.</p>
+</li>
+<li><p>From the <strong>Command prompt</strong>, run the following command to list all the available locations from which you can choose to create a virtual machine. Take note of one of them (e.g.: <em>West US</em>); as you will use it in the following step.</p>
+</li>
+</ol>
+<pre><code>```
+azure vm location list
+```
+</code></pre><ol>
+<li><p>To create a new virtual machine based on the <em>b39f27a8b8c64d52b05eac6a62ebad85__Ubuntu-14_04-LTS-amd64-server-20140724-en-us-30GB</em> image run the following command. Replace <em>[LINUX-VM-NAME]</em> and <em>[ADMIN-USERNAME]</em> with your desired values for the virtual machine name and administrator user. You can also replace <em>West US</em> by the location you chose in the previous step. </p>
+<p> As the command executes it will prompt you to enter the password for the admin user.</p>
+<pre><code> azure vm create [LINUX-VM-NAME] b39f27a8b8c64d52b05eac6a62ebad85__Ubuntu-14_04-LTS-amd64-server-20140724-en-us-30GB [ADMIN-USERNAME] --location &quot;West US&quot; --ssh
+</code></pre><blockquote>
+<p><strong>Note 1:</strong> The <em>--ssh</em> parameter enables SSH to manage the deployed Linux virtual machine.</p>
+<p><strong>Note 2:</strong> To list the available images use the following command.</p>
+<pre><code>azure vm image list
+</code></pre><p><strong>Note 3:</strong> You can specify the blob storage url by specifying the <em>--blob-url</em> parameter to the <em>vm create</em> command. In order to create a storage account use the following steps: </p>
+<ol>
+<li>Replace the <em>[ACCOUNT-NAME]</em> placeholder and execute the following command to create the new storage account. You will be prompted to provide the location where you want to create the storage account. Make sure you provide the same location as you plan to use when creating the virtual machine.</li>
+</ol>
+<pre><code>    azure storage account create [ACCOUNT-NAME]
+</code></pre><ol>
+<li>Obtain and take note of the account keys of the new account by executing the following command. Replace the <em>[ACCOUNT-NAME]</em> placeholder with the one used in the previous step.</li>
+</ol>
+<pre><code>    azure storage account keys list [ACCOUNT-NAME]
+</code></pre><ol>
+<li>Now, create a new container in the blob storage account by executing the following command, replacing all the placeholders accordingly.</li>
+</ol>
+</blockquote>
+</li>
+</ol>
+<pre><code>&gt; ```
+&gt;    azure storage container create [CONTAINER-NAME] --account-name [ACCOUNT-NAME] --account-key [STORAGE-ACCOUNT-KEY]
+&gt;    ```
+
+&gt; 1. Finally, execute the `azure vm create` command using the _--blob-url_ parameter with the blob url, which will resemble the following: `https://&lt;accountname&gt;.blob.core.windows.net/&lt;containerName&gt;/&lt;the-blob-name.vhd&gt;`.
+
+&gt; ```
+&gt;     azure vm create [LINUX-VM-NAME] b39f27a8b8c64d52b05eac6a62ebad85__Ubuntu-14_04-LTS-amd64-server-20140724-en-us-30GB [ADMIN-USERNAME] --location &quot;West US&quot; --ssh --blob-url https://[ACCOUNT-NAME].blob.core.windows.net/&lt;containerName&gt;/&lt;the-blob-name.vhd&gt;
+&gt;     ```
+&gt;
+
+Once this command finishes creating the virtual machine with no errors, you can proceed to attach an empty data disk to it.
+
+&lt;a name=&quot;attach-disk-xplatcli&quot;&gt;&lt;/a&gt;
+</code></pre><ol>
+<li><p>To attach a new 30gb disk to your virtual machine, execute the following command. Replace <em>your-linux-vm</em> with the name of the virtual machine you created.</p>
+<pre><code> azure vm disk attach-new [LINUX-VM-NAME] 30
+</code></pre><p> You should get a message resembling the following:</p>
+<pre><code> info:    Executing command vm disk attach-new
+ +Getting virtual machines
+ +Adding Data-Disk
+ info:    vm disk attach-new command OK
+</code></pre></li>
+<li><p>To display details about the virtual machine, execute the following command. Replace <em>[LINUX-VM-NAME]</em> with the name of the virtual machine you created. Take note of the <em>DNSName</em> value and make sure that the SSH endpoint exists.</p>
+<pre><code> azure vm show [LINUX-VM-NAME]
+</code></pre><p> The output of this command should be similar to the following:</p>
+<pre><code> info:    Executing command vm show
+ +Getting virtual machines
+ data:    DNSName &quot;your-linux-vm.cloudapp.net&quot;
+ data:    Location &quot;West US&quot;
+ data:    VMName &quot;your-linux-vm&quot;
+ data:    IPAddress &quot;100.78.86.88&quot;
+ data:    InstanceStatus &quot;ReadyRole&quot;
+ data:    InstanceSize &quot;Small&quot;
+ data:    Image &quot;b39f27a8b8c64d52b05eac6a62ebad85__Ubuntu-14_04_1-LTS-amd64-server-20141125-en-us-30GB&quot;
+ data:    OSDisk hostCaching &quot;ReadWrite&quot;
+ data:    OSDisk name &quot;your-linux-vm-your-linux-vm-0-201501202057370849&quot;
+ data:    OSDisk mediaLink &quot;https://portalvhdsqmqsgyc6l4zl4.blob.core.windows.net/vhds/your-linux-vm-your-linux-vm-2015-01-20.vhd&quot;
+ data:    OSDisk sourceImageName &quot;b39f27a8b8c64d52b05eac6a62ebad85__Ubuntu-14_04_1-LTS-amd64-server-20141125-en-us-30GB&quot;
+ data:    OSDisk operatingSystem &quot;Linux&quot;
+ data:    OSDisk iOType &quot;Standard&quot;
+ data:    DataDisks 0 hostCaching &quot;None&quot;
+ data:    DataDisks 0 label &quot;your-linux-vm-your-linux-vm-your-linux-vm42-0&quot;
+ data:    DataDisks 0 name &quot;your-linux-vm-your-linux-vm-0-201501202103240353&quot;
+ data:    DataDisks 0 logicalDiskSizeInGB 30
+ data:    DataDisks 0 mediaLink &quot;https://portalvhdsqmqsgyc6l4zl4.blob.core.windows.net/vhds/your-linux-vm-f539b3ed4be4e5ab.vhd&quot;
+ data:    DataDisks 0 iOType &quot;Standard&quot;
+ data:    ReservedIPName &quot;&quot;
+ data:    VirtualIPAddresses 0 address &quot;104.42.11.83&quot;
+ data:    VirtualIPAddresses 0 name &quot;your-linux-vmContractContract&quot;
+ data:    VirtualIPAddresses 0 isDnsProgrammed true
+ data:    Network Endpoints 0 localPort 22
+ data:    Network Endpoints 0 name &quot;SSH&quot;
+ data:    Network Endpoints 0 port 22
+ data:    Network Endpoints 0 protocol &quot;tcp&quot;
+ data:    Network Endpoints 0 virtualIPAddress &quot;104.42.11.83&quot;
+ data:    Network Endpoints 0 enableDirectServerReturn false
+ info:    vm show command OK
+</code></pre><p> <a name="connect-to-vm-xplatcli"></a>
+ To manage the settings of the virtual machine and the applications that run on the machine, you can use an SSH client. You will use the PuTTY program to access the virtual machine.</p>
+<blockquote>
+<p><strong>Note:</strong> To do this, you must install an SSH client on the computer that you want to use to access the virtual machine. There are many SSH client programs to choose from, including the following:</p>
+<ul>
+<li>If you are using a computer that is running a Windows operating system, you might want to use an SSH client such as PuTTY. For more information, see <a href="http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html">PuTTY Download</a>.</li>
+<li>If you are using a computer that is running a Linux operating system, you might want to use an SSH client such as OpenSSH. For more information, see <a href="http://www.openssh.org/readme.htm">OpenSSH</a>.</li>
+</ul>
+</blockquote>
+</li>
+<li><p>Open the PuTTY program.</p>
+<blockquote>
+<p><strong>Note:</strong> If you are using a console SSH client, use the following command to log in: <code>ssh</code></p>
+</blockquote>
+</li>
+<li><p>Enter the <strong>DNSName</strong> that you collected from the execution of the <code>azure vm show</code> command in the <strong>Host Name</strong> input and then click <strong>Open</strong>.</p>
+<p> <img class="img-responsive"src="images/openning-the-connection-to-the-vm.png?raw=true" alt="Opening the connection to the virtual machine in PuTTY"></p>
+<p> <em>Opening the connection to the virtual machine in PuTTY</em></p>
+</li>
+<li><p>Click <strong>Yes</strong> in the <em>PuTTY Security Alert</em> dialog box in order to add the server&#39;s key to the cache.</p>
+<p> <img class="img-responsive"src="images/clicking-yes-to-save-the-key.png?raw=true" alt="Clicking yes to save the key in the cache"></p>
+<p> <em>Clicking yes to save the key in the cache</em></p>
+</li>
+<li><p>Log on to the virtual machine using the administrator user name selected when you created the virtual machine (e.g.: <em>yourVMUsername</em>).</p>
+<p> <img class="img-responsive"src="images/log-on-to-the-vm.png?raw=true" alt="Log on to the virtual machine"></p>
+<p> <em>Log on to the virtual machine</em></p>
+<p> You can now work with the virtual machine just as you would with any other server.</p>
+<p> <a name="configure-datadisk-xplatcli"></a>
+ Your application may need to store data. To set this up, you attached an empty data disk to the virtual machine.</p>
+<p> On Linux, the Resource Disk is typically managed by the Azure Linux Agent and automatically mounted to <strong>/mnt/resource</strong> (or <strong>/mnt</strong> on Ubuntu images). However, the data disk might be named according to the kernel such as <code>/dev/sdc</code>, and users will need to partition, format and mount that resource. You will now learn how to do that. Please see the <a href="http://www.windowsazure.com/en-us/manage/linux/how-to-guides/linux-agent-guide/readme.htm">Azure Linux Agent User Guide</a> for more information.</p>
+<blockquote>
+<p><strong>Note:</strong> Don’t store data on the resource disk. This disk provides temporary storage for applications and processes and is used to store unnecessary data such as swap files. Data disks reside in Azure Storage as .vhd files in page blobs and provide storage redundancy to protect your data. For more detail, see <a href="http://msdn.microsoft.com/en-us/library/jj672979.aspx">About Disks and Images in Azure</a>.</p>
+</blockquote>
+</li>
+<li><p>In the SSH window, type the following command:</p>
+<pre><code> sudo grep SCSI /var/log/syslog
+</code></pre><p> You can find the identifier of the last data disk that was added in the messages that are displayed, in brackets (e.g. [sdc]).</p>
+</li>
+<li><p>In the SSH window, type the following command to create a new device:</p>
+<pre><code> sudo fdisk /dev/sdc
+</code></pre><p> <img class="img-responsive"src="images/executing-fdisk-in-the-vm.png?raw=true" alt="Executing fdisk in the virtual machine"></p>
+<p> <em>Executing fdisk in the virtual machine</em></p>
+<blockquote>
+<p><strong>Note:</strong> In this example you may need to use <code>sudo -i</code> on some distributions if /sbin or /usr/sbin are not in your <code>$PATH</code>.</p>
+</blockquote>
+</li>
+<li><p>Type <strong>n</strong> to create a new partition.</p>
+</li>
+<li><p>Type <strong>p</strong> to make the partition the primary partition, type <strong>1</strong> to make it the first partition, and then type enter to accept the default values for the first and last sectors.</p>
+</li>
+<li><p>Type <strong>p</strong> to see the details about the disk that is being partitioned.</p>
+<p> <img class="img-responsive"src="images/seeing-the-details-about-the-disk.png?raw=true" alt="Displaying disk details"></p>
+<p> <em>Displaying disk details</em></p>
+</li>
+<li><p>Type <strong>w</strong> to write the settings for the disk.</p>
+</li>
+<li><p>You must create the file system on the new partition. As an example, type the following command to create the file system:</p>
+<pre><code> sudo mkfs -t ext4 /dev/sdc1
+</code></pre><blockquote>
+<p><strong>Note:</strong> Note that SUSE Linux Enterprise 11 systems provide only read-only access for ext4 file systems. For these systems, we recommended formatting the new file system as ext3 rather than ext4.</p>
+</blockquote>
+</li>
+<li><p>Create a directory to mount the new file system. As an example, type the following command:</p>
+<pre><code> sudo mkdir /datadrive
+</code></pre></li>
+<li><p>Type the following command to mount the drive:</p>
+<pre><code>sudo mount /dev/sdc1 /datadrive
+</code></pre><p>The data disk is now ready to use as <strong>/datadrive</strong>.</p>
+</li>
+<li><p>To ensure the drive is re-mounted after a reboot, it must be added to the /etc/fstab file. In addition, it is highly recommended that the UUID (Universally Unique IDentifier) is used in /etc/fstab to refer to the drive rather than just the device name (i.e. /dev/sdc1). To find the UUID of the new drive you can use the <strong>blkid</strong> utility:</p>
+<pre><code>sudo -i blkid
+</code></pre><p>The output will resemble the following:</p>
+<pre><code>/dev/sda1: UUID=&quot;11111111-1b1b-1c1c-1d1d-1e1e1e1e1e1e&quot; TYPE=&quot;ext4&quot;
+/dev/sdb1: UUID=&quot;22222222-2b2b-2c2c-2d2d-2e2e2e2e2e2e&quot; TYPE=&quot;ext4&quot;
+/dev/sdc1: UUID=&quot;33333333-3b3b-3c3c-3d3d-3e3e3e3e3e3e&quot; TYPE=&quot;ext4&quot;
+</code></pre><blockquote>
+<p><strong>Note:</strong> blkid may not require sudo access in all cases, however, it may be easier to run with <code>sudo -i</code> on some distributions if /sbin or /usr/sbin are not in your <code>$PATH</code>.</p>
+<p><strong>Caution:</strong> Improperly editing the /etc/fstab file could result in an unbootable system. If unsure, please refer to the distribution&#39;s documentation for information on how to properly edit this file. It is also recommended that a backup of the /etc/fstab file is created before editing.</p>
+</blockquote>
+</li>
+<li><p>Using a text editor, enter the information about the new file system at the end of the /etc/fstab file.  In this example we will use the UUID value for the new <strong>/dev/sdc1</strong> device that was created in the previous steps, and the mountpoint <strong>/datadrive</strong>.</p>
+<pre><code> UUID=33333333-3b3b-3c3c-3d3d-3e3e3e3e3e3e   /datadrive   ext4   defaults   1   2
+</code></pre><blockquote>
+<p><strong>Note 1:</strong> On systems based on SUSE Linux you may need to use a slightly different format:</p>
+<pre><code>/dev/disk/by-uuid/33333333-3b3b-3c3c-3d3d-3e3e3e3e3e3e   /   ext3   defaults   1   2
+</code></pre><p><strong>Note 2:</strong> You can use the vim text editor in order to perform this steps.</p>
+<ol>
+<li>Execute the following command in order to start the vim editor</li>
+</ol>
+<pre><code>sudo vim /etc/fstab
+</code></pre><ol>
+<li>Type <strong>i</strong> to enter to <em>INSERT</em> mode and use the arrows to go to the end of the file.</li>
+<li>Type enter and then add the information.</li>
+<li>Type <strong>Esc</strong> to exit the <em>INSERT</em> mode.</li>
+<li>Type <strong>:wq</strong> in order to write the file and quit vim.</li>
+</ol>
+<p><strong>Note 3:</strong> If additional data drives or partitions are created, you will need to enter them into /etc/fstab separately as well.</p>
+</blockquote>
+</li>
+<li><p>You can now test that the file system is mounted properly by simply unmounting and then re-mounting the file system, i.e. using the example mount point <code>/datadrive</code> created in the earlier steps: </p>
+<pre><code> sudo umount /datadrive
+ sudo mount /datadrive
+</code></pre><p> If the second command produces an error, check the /etc/fstab file and make sure the syntax is correct.</p>
+<blockquote>
+<p><strong>Note:</strong> Subsequently removing a data disk without editing fstab could cause the VM to fail to boot. If this is a common occurrence, then most distributions provide either the <code>nofail</code> and/or <code>nobootwait</code> fstab options that will allow a system to boot even if the disk is not present. Please consult your distribution&#39;s documentation for more information on these parameters.</p>
+</blockquote>
+</li>
+</ol>
+<p><a name="creating-a-vm-using-powershell"></a></p>
+<p>##Creating a Virtual Machine using Powershell</p>
+<p>In this task you will create a virtual machine using PowerShell cmdlets. </p>
+<p>In the following steps you will configure your azure subscription in PowerShell, ensure your subscription has a storage account associated with it and will set one if not. You will then set variables with the parameters of the virtual machine that will be created, and continue by creating the virtual machine. You will also learn how to attach a new disk to the virtual machine and how to add a VM Extension to the virtual machine. Finally, you will create a Remote Desktop Protocol file to access the machine and use it to access the machine and initialize the new disk.</p>
+<p><a name="configure-subscription-powershell"></a>
+You will start by configuring your Azure subscription in Powershell.</p>
+<p>As for the xplat-cli, most cmdlets require an Azure subscription to manage your services. There are two ways to provide your subscription information to Windows PowerShell: you can use a management certificate that contains the information or you can sign in to Azure using your Microsoft account or an organizational (work or school) account. When you sign in, Azure Active Directory (Azure AD) authenticates the credentials and returns an access token that lets Azure PowerShell manage your account.</p>
+<p>Azure AD is the recommended authentication method since it makes it easier to manage access to a subscription. With the update in version 0.8.6, it enables an automation scenario with Azure AD authentication even when using a work or school account. It works with Azure Resource Manager API as well.</p>
+<p>For more information about authentication and subscription management, see <a href="http://msdn.microsoft.com/en-us/library/windowsazure/hh531793.aspx#BKMK_AccountVCert">&quot;What&#39;s the difference between account-based authentication and certificate-based authentication&quot;</a>.</p>
+<p>To log in using an Azure AD account, follow these instructions:</p>
+<ol>
+<li><p>Open the <strong>Microsoft Azure PowerShell</strong> console.</p>
+</li>
+<li><p>Type the following command and hit Enter:</p>
+<pre><code class="lang-PowerShell"> Add-AzureAccount
+</code></pre>
+</li>
+<li><p>A dialog box to <strong>Sign in to Microsoft Azure</strong> will appear. Follow the instructions, typing the email address and password associated with your account when prompted.</p>
+<p> Azure authenticates and saves the credential information, and then closes the window. After it does, you will see the following output appear in the console window.</p>
+<p> <img class="img-responsive"src="images/running-add-azureaccount.png?raw=true" alt="Running Add-AzureAccount"></p>
+<p> <em>Running the Add-AzureAccount command</em></p>
+<blockquote>
+<p>Starting from 0.8.6, if you sign in using an organizational account, you can type the following command to bypass the pop up window: </p>
+<pre><code class="lang-PowerShell">$cred = Get-Credential
+Add-AzureAccount -Credential $cred
+</code></pre>
+<p>This will prompt the standard Windows PowerShell credential window for you to enter your work or school account user name and password.</p>
+<p>If you are using this in an automation script and want to avoid any popup windows, use the following snippet: </p>
+<pre><code class="lang-PowerShell">$userName = &quot;&lt;your work or school account user name&gt;&quot;
+$securePassword = ConvertTo-SecureString -String &quot;&lt;your work or school account password&gt;&quot; -AsPlainText -Force
+$cred = New-Object System.Management.Automation.PSCredential($userName, $securePassword)
+Add-AzureAccount -Credential $cred
+</code></pre>
+<p><strong>Note:</strong>
+This non-interactive login method only works with an organizational account. An organizational account is a user that is managed by your organization and defined in the Azure Active Directory instance for your organization. If you do not currently have an organizational account you can follow the instructions for <a href="#creating-new-organizational-account">Creating a new organizational account</a> to create one.</p>
+</blockquote>
+</li>
+</ol>
+<pre><code>Now you will ensure your azure subscription has an associated storage account and configure one, if not.
+</code></pre><ol>
+<li><p>To verify whether your subscription has an associated storage account, run this command. </p>
+<pre><code class="lang-PowerShell"> Get-AzureSubscription
+</code></pre>
+<p> The command will produce an output like this:</p>
+<p> <img class="img-responsive"src="images/getazuresubscription-output-no-storage-accoun.png?raw=true" alt="Get-AzureSubscription output with no storage account set"></p>
+<p> <em>Get-AzureSubscription output when no Storage Account set</em></p>
+<p> Note the value for <strong>SubscriptionName</strong> in the output (<em>Free Trial</em> in this case). You will use it to replace the [SUBSCRIPTION-NAME] placeholder in upcoming steps.</p>
+</li>
+<li><p>Run the following command to get information about the storage account:</p>
+<pre><code class="lang-PowerShell"> Get-AzureStorageAccount
+</code></pre>
+<p> The output produced will look like this:</p>
+<p> <img class="img-responsive"src="images/get-azurestorageaccount-output.png?raw=true" alt="Get-AzureStorageAccount output"></p>
+<p> <em>Get-AzureStorageAccount output</em></p>
+<p> Note the values for the <strong>Label</strong> and <strong>Location</strong> properties. You will use them to replace the [STORAGE-ACCOUNT-LABEL] and [STORAGE-ACCOUNT-LOCATION] placeholders in the upcoming steps.</p>
+</li>
+<li><p>If, like in the image shown a couple of steps above, the command <strong>Get-AzureSubscription</strong> did not list a value next to <strong>CurrentStorageAccountName</strong>, run the following snippet to set it. Replace the [SUBSCRIPTION-NAME] and [STORAGE-ACCOUNT-LABEL] placeholders with the values retrieved earlier. Otherwise, skip this step.</p>
+<pre><code class="lang-PowerShell"> Set-AzureSubscription -SubscriptionName &quot;[SUBSCRIPTION-NAME]&quot; -CurrentStorageAccountName [STORAGE-ACCOUNT-LABEL]
+</code></pre>
+<p> This will set the storage account. You can execute the <strong>Get-AzureSubscription</strong> command and this time, the value set should be listed.</p>
+<p> <a name="create-vm-powershell"></a>
+ Now you will set the variables that will be used to create the virtual machine. </p>
+</li>
+<li><p>Execute the snippet below, replacing the [ADMIN-USER-NAME] and [ADMIN-PASSWORD] placeholders with your desired values, and the [STORAGE-ACCOUNT-LOCATION] placeholder with the value retrieved earlier. The location entered should match the storage account location retrieved earlier.</p>
+<pre><code class="lang-PowerShell"> $dclocation = &#39;[STORAGE-ACCOUNT-LOCATION]&#39;
+ $adminUserName = &#39;[ADMIN-USER-NAME]&#39;
+ $adminPassword = &#39;[ADMIN-PASSWORD]&#39;
+ $vmname = &#39;azureVM&#39;
+</code></pre>
+</li>
+<li><p>Select a name for the Cloud Service. As it needs to be unique, you can verify first whether the selected Cloud Service Name exists by running the <strong>Test-AzureName</strong> command. If this command outputs False, the name is available.</p>
+<pre><code class="lang-PowerShell"> Test-AzureName -Service &#39;[CLOUD-SERVICE-NAME]&#39;
+
+ $cloudSvcName = &#39;[CLOUD-SERVICE-NAME]&#39;
+</code></pre>
+</li>
+<li><p>Set the image name for your virtual machine to <em>a699494373c04fc0bc8f2bb1389d6106__Windows-Server-2012-Datacenter-201412.01-en.us-127GB.vhd</em>. This corresponds to an image of Windows Server R2 DataCenter.</p>
+<pre><code class="lang-PowerShell"> $image = &#39;a699494373c04fc0bc8f2bb1389d6106__Windows-Server-2012-Datacenter-201412.01-en.us-127GB.vhd&#39;
+</code></pre>
+<blockquote>
+<p>Note: You can view the complete list of images available by running the following command:</p>
+<pre><code class="lang-PowerShell">Get-AzureVMImage | select ImageName
+</code></pre>
+<p>You can choose to create a virtual machine based on a different image. If you choose to create a Linux virtual machine, the command to create the virtual machine will vary slightly.</p>
+</blockquote>
+</li>
+<li><p>Now that all variables are set, run the following command to create the virtual machine:</p>
+<pre><code class="lang-PowerShell"> New-AzureQuickVM -AdminUserName $adminUserName -Windows -ServiceName $cloudSvcName -Name $vmname -ImageName $image -Password $adminPassword -Location $dclocation
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong> If you chose to create a Linux image, the command to use is the following:</p>
+<pre><code class="lang-PowerShell">New-AzureQuickVM -Linux -ServiceName $cloudSvcName -Name $vmname -ImageName $image -LinuxUser $adminUserName -Password $adminPassword -Location $dclocation
+</code></pre>
+<p>The differences reside in the <strong>-Linux</strong> OS switch and the <strong>-LinuxUser</strong> switch that replaces the <strong>-AdminUserName</strong> switch in Windows.</p>
+<p><strong>Note 2:</strong> Specifying the <strong>-Location</strong> parameter when calling <strong>New-AzureQuickVM</strong> or <strong>New-AzureVM</strong> tells the Cmdlet to attempt to create a cloud service as a container for the virtual machines. Use this option when creating the first virtual machine and omit it when adding new virtual machines to the same cloud service.</p>
+<p><strong>Note 3:</strong> For more information, visit the <a href="https://msdn.microsoft.com/en-us/library/azure/dn495183.aspx">New-AzureQuickVM reference</a> page.</p>
+</blockquote>
+</li>
+<li><p>The virtual machine is created. </p>
+<p> <img class="img-responsive"src="images/creating-vm-with-powershell-output.png?raw=true" alt="Creating Virtual Machine with Powershell output"></p>
+<p> <em>Virtual Machine creation output</em></p>
+</li>
+<li><p>You can list all VMs in the Cloud Service by running the following cmdlet:</p>
+<pre><code class="lang-PowerShell"> Get-AzureVM -ServiceName $cloudSvcName
+</code></pre>
+<p> <img class="img-responsive"src="images/get-azurevm-output---list-all-vms.png?raw=true" alt="Get-AzureVM output - list all vms"></p>
+<p> <em>Get-AzureVM output when listing all virtual machines</em></p>
+<p> If you want to enumerate only the details of the virtual machine just created, provide the <strong>-Name</strong> switch:</p>
+<pre><code class="lang-PowerShell"> Get-AzureVM -ServiceName $cloudSvcName -Name $vmname
+</code></pre>
+<p> <a name="attach-disk-powershell"></a></p>
+<p> Now you will add an empty disk to the virtual machine. Since the virtual machine has already been created, you will need to modify the existing machine. Modifying an existing virtual machine requires retrieving the current settings by calling <strong>Get-AzureVM</strong>, modifying them, and then calling the <strong>Update-AzureVM</strong> Cmdlet to save the changes.</p>
+<blockquote>
+<p><strong>Note:</strong> It&#39;s a best practice to use one or more separate disks to store a virtual machine&#39;s data. When you create an Azure virtual machine, it has a disk for the operating system mapped to the C drive and a temporary disk mapped to the D drive. Do not use the D drive to store data. As the name implies, it provides temporary storage only. It offers no redundancy or backup because it doesn&#39;t reside in Azure storage.</p>
+</blockquote>
+</li>
+</ol>
+<ol>
+<li><p>Execute the following pipe of cmdlets:</p>
+<pre><code class="lang-PowerShell"> Get-AzureVM -Name $vmname -ServiceName $cloudSvcName |
+      Add-AzureDataDisk -CreateNew -DiskSizeInGB 50 -DiskLabel &#39;datadisk1&#39; -LUN 2 |
+      Update-AzureVM
+</code></pre>
+<p> The <strong>Get-AzureVM</strong> Cmdlet retrieves the virtual machine object and sends it to the PowerShell Pipeline.</p>
+<p> The <strong>Add-AzureDataDisk</strong> Cmdlet with the <strong>-CreateNew</strong> parameter allows you to dynamically add storage to the virtual machine. In this case you are attaching an unformatted blank VHD of 50 gigabytes. The <strong>-LUN</strong> parameter tells the order of the device being attached and the optional <strong>-MediaLocation</strong> parameter can be added to specify the location in storage to keep the new VHDs.</p>
+<p> <strong>Add-AzureDataDisk</strong> also supports the <strong>-Import</strong> parameter to attach a disk in the disk library and <strong>-ImportFrom</strong> to attach a pre-existing disk in storage.</p>
+</li>
+<li><p>Once the <strong>Update-AzureVM</strong> call has completed, your virtual machine is ready to be used. </p>
+<p> <img class="img-responsive"src="images/update-azurevm-output-after-adding-a-datadisk.png?raw=true" alt="Update-AzureVM output after adding a datadisk"></p>
+<p> <em>Update-AzureVM output after adding a new datadisk</em></p>
+</li>
+</ol>
+<pre><code>&lt;a name=&quot;install-vm-extension-powershell&quot;&gt;&lt;/a&gt;
+Now you will learn how to add extensions to the virtual machine just created.
+
+Microsoft Azure provides VM Extensions built by both Microsoft and trusted third-party providers to enable security, runtime, debugging, management, and other features you can take advantage of to increase your productivity with Azure Virtual Machines. 
+For more details see [Azure VM Extensions and Features](https://msdn.microsoft.com/en-us/library/azure/dn606311.aspx).
+
+The **Azure Virtual Machine Agent** (VM Agent) is used to install, configure, manage and run **Azure Virtual Machine Extensions** (VM Extensions). The VM Agent is a secure, light-weight process that installs, configures, and removes VM extensions on instances of Azure Virtual Machines from the Image Gallery and on custom VM instances if they have the VM Agent installed. 
+
+There are two Azure VM Agents, one for Windows VMs and one for Linux VMs. By default, the VM Agent is automatically installed when you create a VM from the Image Gallery, but you can also install the VM agent after the instance is created or install it in a custom VM image that you then upload yourself.
+
+You will now verify that the VM Agent is enabled in the virtual machine created in the previous steps, and after that install the Symantec Protection extension. Finally, you will verify that the extension was correctly installed on the virtual machine. All these steps will be carried out using PowerShell and using some of the same variables set previously.
+</code></pre><ol>
+<li><p>To verify whether the VM Agent is enabled on the virtual machine, run these commands: </p>
+<pre><code class="lang-PowerShell"> $vm = Get-AzureVM -ServiceName $cloudSvcName
+ $vm.VM.ProvisionGuestAgent
+</code></pre>
+<p> The output of the first command should not return any errors, and the second command should be True.</p>
+<p> Running these commands will also set the $vm.VM variable, which will be used in upcoming steps to add the extension. </p>
+<blockquote>
+<p><strong>Note:</strong> If the value of the <strong>$vm.VM.ProvisionGuestAgent</strong> property is False, connect to the virtual machine and install the VM Agent. You can download it <a href="http://go.microsoft.com/fwlink/?LinkID=394789&amp;clcid=0x409/readme.htm">here</a>. Then, set the value of the variable to True with the following snippets.</p>
+<pre><code class="lang-PowerShell">$vm = Get-AzureVM -serviceName $cloudSvcName -Name $vmname
+$vm.VM.ProvisionGuestAgent = $TRUE
+Update-AzureVM -Name $name -VM $vm.VM -ServiceName $cloudSvcName
+</code></pre>
+</blockquote>
+<p> Now you will install the Symantec endpoint protection extension.</p>
+</li>
+<li><p>Execute the following command to add the extension:</p>
+<pre><code class="lang-PowerShell"> Set-AzureVMExtension -Publisher Symantec -ExtensionName SymantecEndpointProtection -VM $vm.VM -Version 12.*
+ Update-AzureVM -ServiceName $cloudSvcName -Name $vmname -VM $vm.VM
+</code></pre>
+<p> <strong>Set-AzureVMExtension</strong> sets the properties for the extension about to be installed. <strong>Update-AzureVM</strong> is the cmdlet that installs the extension.</p>
+<p> The output of running all the commands up to now should look like this:</p>
+<p> <img class="img-responsive"src="images/set-azurevmextension-output.png?raw=true" alt="Set-AzureVMExtension output"></p>
+<p> <em>Adding a VM Extension output</em></p>
+</li>
+<li><p>To verify that the extension was installed on the virtual machine, run the following command:</p>
+<pre><code class="lang-PowerShell"> Get-AzureVMExtension -VM $vm.VM
+</code></pre>
+<p> The output of the command should look like this:</p>
+<p> <img class="img-responsive"src="images/get-azurevmextension-output.png?raw=true" alt="Get-AzureVMExtension output"></p>
+<p> <em>Get-AzureVMExtension output</em></p>
+<p> <a name="connect-to-vm-powershell"></a>
+ After you attach a disk to a virtual machine you need to initialize it so it&#39;s ready for use. To do so you will need to log in to the machine to finish the initialization of the new data disk attached. </p>
+</li>
+<li><p>Run the following command to create a remote desktop protocol file (rdp) and launch it. When prompted to log in, use the credentials for the administrator user you configured when creating the virtual machine.</p>
+<blockquote>
+<p><strong>Note:</strong> The location for the rdp file provided must exist, otherwise you will see an error.</p>
+</blockquote>
+<pre><code class="lang-PowerShell"> Get-AzureRemoteDesktopFile -ServiceName $cloudSvcName -Name $vmname -LocalPath &#39;C:\myvmconnection.rdp&#39; -Launch
+</code></pre>
+<p> This will launch the rdp, effectively starting the flow of connecting to the remote machine. </p>
+<p> <img class="img-responsive"src="images/get-azureremotedesktopfile-output.png?raw=true" alt="Get-AzureRemoteDesktopFile output"></p>
+<p> <em>Get-AzureRemoteDesktopFile output</em></p>
+</li>
+<li><p>In the Remote Desktop Connection dialog box, click <strong>Connect</strong>.</p>
+<blockquote>
+<p><strong>Note:</strong>: You might need to wait until the virtual machine has booted for the rdp file to successfully connect and prompt for credentials. If so, retry by opening the rdp file from the location where it was saved until you are prompted for credentials.</p>
+</blockquote>
+</li>
+<li><p>Enter the user name and password for the Administrator user that was entered when creating the virtual machine (step 7) and click <strong>OK</strong>.</p>
+<p> <img class="img-responsive"src="images/enter-admin-user-credentials.png?raw=true" alt="Enter admin User credentials"> </p>
+<p> <em>Entering the admin user credentials</em></p>
+</li>
+<li><p>In the Remote Desktop Connection dialog box, click <strong>Yes</strong> to verify the identity of the remote computer. You can check &quot;Don&#39;t ask me again for connections to this computer&quot; if you do not want to see this dialog box again.</p>
+<p> <img class="img-responsive"src="images/verify-virtual-machine-identity.png?raw=true" alt="Verify virtual machine identity"></p>
+<p> <em>Verifying the virtual machine identity</em></p>
+</li>
+<li><p>After a few seconds, the remote desktop window opens and starts setting up the session for the administrator user. Once it is finished, you will see the <strong>Server Manager Dashboard</strong> open, which you will use in the following steps to configure the data disk that you attached previously. </p>
+<p> For all other purposes, you could now work with this machine as you would with any other machine in your own environment.</p>
+<p> <img class="img-responsive"src="images/using-the-remote-virtual-machine.png?raw=true" alt="Using the remote virtual machine"></p>
+<p> <em>Using the virtual machine</em></p>
+<p> <a name="configure-datadisk-powershell"></a>
+ Now you will configure the data disk that you attached to the Virtual Machine. </p>
+</li>
+<li><p>In the <strong>Server Manager Dashboard</strong> that is open in the virtual machine, click <strong>File and Storage Services</strong>.</p>
+<p> <img class="img-responsive"src="images/click-file-and-storage-services.png?raw=true" alt="Clicking File and Storage Services"></p>
+<p> <em>Clicking File and Storage Services</em></p>
+</li>
+<li><p>Once you are in the <strong>Servers</strong> pane of <strong>File and Storage Services</strong>, click <strong>Disks</strong>.</p>
+<p> <img class="img-responsive"src="images/clicking-disks-in-file-and-storage-services.png?raw=true" alt="Clicking Disks in File and Storage Services"></p>
+<p> <em>Viewing the disks in File and Storage Services</em></p>
+<p> The disks available in the machine are listed. You will see one that is listed as Microsoft Virtual Disk, with the partition <em>Unknown</em> and Capacity set to the size entered when the disk was created. </p>
+</li>
+<li><p>Right-click the disk and select <strong>Initialize</strong>.</p>
+<p> <img class="img-responsive"src="images/initialize-the-disk.png?raw=true" alt="Initialize the disk"></p>
+<p> <em>Initializing the disk</em></p>
+</li>
+<li><p>Click <strong>Yes</strong> in the confirmation message box to confirm you want to continue erasing all data on the disk.</p>
+<p> <img class="img-responsive"src="images/confirm-initialization-of-disk.png?raw=true" alt="Confirm initialization of disk"></p>
+<p> <em>Confirming initialization of the disk</em></p>
+</li>
+<li><p>After a short wait, the disk now has a Partition set. Right-click the disk and select <strong>New Volume</strong>.</p>
+<p> <img class="img-responsive"src="images/creating-new-volume.png?raw=true" alt="Creating new volume"></p>
+<p> <em>Clicking New Volume in the context menu</em></p>
+</li>
+<li><p>Click <strong>Next</strong> in the <strong>New Volume Wizard</strong> dialog box that opens.</p>
+</li>
+<li><p>In the <strong>Server and Disk</strong> step of the <strong>New Volume Wizard</strong>, click <strong>Next</strong>.</p>
+</li>
+</ol>
+<ol>
+<li><p>In the <strong>Size</strong> step of the <strong>New Volume Wizard</strong>, update the volume size if desired and then click <strong>Next</strong>.</p>
+<p> <img class="img-responsive"src="images/newvolumewizard-size-step.png?raw=true" alt="New Volume Wizard - Size step"></p>
+<p> <em>New Volume Wizard - Size step</em></p>
+</li>
+<li><p>In the <strong>Drive Letter or Folder</strong> step of the <strong>New Volume Wizard</strong>, update information as desired and click <strong>Next</strong>.</p>
+</li>
+<li><p>In the <strong>File System Settings</strong> step of the <strong>New Volume Wizard</strong>, update information as necessary and click <strong>Next</strong>.</p>
+<p> <img class="img-responsive"src="images/newvolumewizard-file-system-settings-step.png?raw=true" alt="New Volume Wizard - File System Settings step"></p>
+<p> <em>New Volume Wizard - File System Settings step</em></p>
+</li>
+<li><p>In the <strong>Confirmation</strong> step of the <strong>New Volume Wizard</strong>, review the information and click <strong>Create</strong>.</p>
+</li>
+</ol>
+<ol>
+<li><p>After the new volume is created, click <strong>Close</strong>.</p>
+</li>
+<li><p>You can now open a <strong>File Explorer</strong> window and confirm the disk is ready to be used.</p>
+<p> <img class="img-responsive"src="images/attached-disk-ready-to-be-used.png?raw=true" alt="Attached disk ready to be used"></p>
+<p> <em>Viewing attached disk open in File Explorer, ready to be used</em></p>
+</li>
+</ol>
+<p><a name="creating-a-vm-using-Runbook"></a></p>
+<p>##Creating a virtual machine using a Runbook</p>
+<p>Azure Automation allows you to automate the creation, deployment, monitoring, and maintenance of resources in your Azure environment using a highly scalable and reliable workflow execution engine.</p>
+<p>An Azure Automation account contains:</p>
+<ul>
+<li><strong>Runbooks</strong>: a Runbook is a PowerShell workflow that uses Azure Cmdlets to perform unattended actions.</li>
+<li><strong>Assets</strong>: an asset is a piece of information that is shared and used by all scripts in the automation account. It can be a connection, a credential, a variable or a schedule.</li>
+<li><strong>Jobs</strong>: a job is the execution of a Runbook. </li>
+</ul>
+<p>In this task you will create and start a Runbook from scratch to create a virtual machine. You will also create the necessary assets for this Runbook, and start it. Before that you will ensure that a couple of prerequisites needed for the task are set up. </p>
+<p><a name="runbook-setup"></a>
+For the Runbook to be created and run successfully you will need to ensure that the subscription contains a storage account and an organizational account that is co-administrator.</p>
+<p>To verify whether you already have a storage account, and create a new one if you don&#39;t follow these steps: </p>
+<ol>
+<li><p>Sign in to the <a href="https://manage.windowsazure.com/readme.htm">Azure Management Portal</a>.</p>
+</li>
+<li><p>The All Items view will show by default. Find in the table a row with <strong>Type = Storage Account</strong>. Otherwise, click <strong>Storage</strong> in the left sidebar to view only Storage Accounts.</p>
+<p> <img class="img-responsive"src="images/checking-storage-accounts.png?raw=true" alt="Checking storage accounts"></p>
+<p> <em>Checking whether an storage account exists</em></p>
+<p> If you can find at least one storage account to use, skip the next step. Otherwise, the next step indicates how to create one.</p>
+</li>
+<li><p>Click <strong>NEW</strong> in the bottom bar, then select <strong>DATA SERVICES</strong> &gt; <strong>STORAGE</strong> &gt; <strong>QUICK CREATE</strong> and specify a storage name and a location.</p>
+<p> <img class="img-responsive"src="images/creating-a-new-storage-account.png?raw=true" alt="Creating a new storage account"></p>
+<p> <em>Creating a new storage account</em></p>
+</li>
+</ol>
+<p><a name="creating-new-organizational-account"></a>
+Some non-interactive login methods only work with an organizational account. An organizational account is a user that is managed by your organization, and defined in the Azure Active Directory instance for your organization. This is the case of the runbook.</p>
+<p>If you do not currently have an organizational account, and are using a Microsoft account to log in to your Azure subscription, you can create one using the following steps.</p>
+<blockquote>
+<p><strong>Note:</strong> To be able to create a user account in the default Active Directory for the subscription you need to be a Global Administrator for your subscription. If you are not you will need to either request this permission or request that a Global Admin performs these steps for you.</p>
+</blockquote>
+<ol>
+<li><p>From the <a href="https://manage.windowsazure.com/readme.htm"><strong>Azure Management Portal</strong></a>, click on <strong>Active Directory</strong>.</p>
+<p> <img class="img-responsive"src="images/viewing-active-directories.png?raw=true" alt="Viewing Active Directories"></p>
+</li>
+<li><p>Click the row for the Default Directory to navigate to the Active Directory page, and then click the <strong>Users</strong> tab. </p>
+<p> <img class="img-responsive"src="images/clicking-the-users-tab-for-the-directory.png?raw=true" alt="Clicking the Users tab for the directory"></p>
+<p> <em>Clicking the Users tab for the directory</em></p>
+</li>
+<li><p>Click <strong>ADD USER</strong> in the bottom bar. </p>
+<p> <img class="img-responsive"src="images/clicking-add-user.png?raw=true" alt="Clicking Add User"></p>
+<p> <em>Clicking Add User in the bottom bar</em></p>
+</li>
+<li><p>The <strong>Add User</strong> wizard will appear and prompt you to enter user information. Keep the <em>Role</em> set to <em>User</em>. During the creation of the user you will be supplied with both an e-mail address for the user and a temporary password. Save this information as it is used in another step.</p>
+<p> <img class="img-responsive"src="images/organizational-account-created.png?raw=true" alt="Organizational account created"></p>
+<p> <em>Organizational account creation</em></p>
+</li>
+</ol>
+<ol>
+<li><p>From the management portal, click <strong>Settings</strong> in the sidebar, and then click the <strong>Administrators</strong> tab. </p>
+<p> <img class="img-responsive"src="images/clicking-administrators-in-settings.png?raw=true" alt="Clicking administrators in Settings"></p>
+<p> <em>Clicking Administrators in Settings</em></p>
+</li>
+<li><p>Click <strong>Add</strong> in the bottom bar, and add the new user as a co-administrator. This allows the work or school account to manage your Azure subscription.</p>
+<p> <img class="img-responsive"src="images/clicking-add-user-to-administrators.png?raw=true" alt="Clicking Add User to Administrators"></p>
+<p> <em>Clicking Add User to Administrators</em></p>
+<p> <img class="img-responsive"src="images/user-added-as-co-administrator.png?raw=true" alt="User added as co-administrator"></p>
+<p> <em>User was added as co-administrator</em></p>
+</li>
+<li><p>Finally, log out of the Azure portal and then log back in using the work or school account. As this is the first time logging in with this account, you will be prompted to change the password.</p>
+<blockquote>
+<p>For more information on signing up for Microsoft Azure with a work or school account, see <a href="http://azure.microsoft.com/en-us/documentation/articles/sign-up-organization/readme.htm">Sign up for Microsoft Azure as an Organization</a>.</p>
+</blockquote>
+</li>
+<li><p>Log out of the Azure portal and then log back in using your own account. </p>
+<p> <a name="create-empty-runbook"></a></p>
+</li>
+<li><p>Click <strong>NEW</strong> in the bottom bar and then select <strong>APP SERVICES</strong> &gt; <strong>AUTOMATION</strong> &gt; <strong>RUNBOOK</strong> &gt; <strong>QUICK CREATE</strong>.</p>
+<p> <img class="img-responsive"src="images/creating-a-new-runbook.png?raw=true" alt="Creating a new Runbook"></p>
+<p> <em>Creating a new Runbook</em></p>
+<blockquote>
+<p><strong>Note:</strong> You can create new Runbooks using the gallery where you can find samples created by Microsoft and the community.</p>
+<p><img class="img-responsive"src="images/runbook-gallery.png?raw=true" alt="Runbook Gallery"></p>
+<p><em>Runbook Gallery</em></p>
+</blockquote>
+</li>
+<li><p>In the <strong>QUICK CREATE</strong> section enter a name for the Runbook (e.g.: <em>New-AzureVM</em>), select the <strong>Create a new automation account</strong> option from the <strong>Automation Account</strong> selector, and set a valid account name. Finally, click <strong>CREATE</strong>.</p>
+<p> <img class="img-responsive"src="images/creating-a-new-runbook-and-account.png?raw=true" alt="Creating a new Runbook and Automation account"></p>
+<p> <em>Creating a new Runbook and Automation account</em></p>
+<p> <a name="edit-runbook"></a></p>
+</li>
+<li><p>When both the Automation account and the Runbook are ready, click the <strong>EDIT RUNBOOK</strong> button in the Runbook notification.</p>
+<p> <img class="img-responsive"src="images/navigating-to-edit-runbook.png?raw=true" alt="Selecting to edit the new Runbook"></p>
+<p> <em>Selecting to edit the new Runbook</em></p>
+<p> This will navigate to the workflow edition page, which will show the following outline. You will build the Runbook script in the next steps.</p>
+<pre><code class="lang-PowerShell"> workflow New-AzureVM
+ { 
+ }
+</code></pre>
+<p> Make sure all the code you copy into the workflow is inside the curly braces that define the workflow, and that there are no lines after that. Also, the workflow name should match the Runbook&#39;s name.</p>
+</li>
+</ol>
+<ol>
+<li><p>In the <strong>DRAFT</strong> view of the Runbook, add the following code to the workflow definition in order to add parameters. These parameters will later appear in a dialog box when you run the Runbook.</p>
+<pre><code class="lang-PowerShell"> param
+ ( 
+     [Parameter(Mandatory=$true)] [String] $ServiceName,
+
+     [Parameter(Mandatory=$true)] [String] $StorageAccountName,
+
+     [Parameter(Mandatory=$true)] [PSCredential] $AzureCredential,
+
+     [Parameter(Mandatory=$false)] [String] $VMName = &quot;VM-Instance&quot;,
+     [Parameter(Mandatory=$false)] [String] $VMInstanceSize = &quot;ExtraSmall&quot;
+ )
+</code></pre>
+<p> The parameters defined by the workflow are:</p>
+<ul>
+<li><strong>$ServiceName</strong>: cloud service name in which the virtual machine will be created. This is created by the script.</li>
+<li><strong>$StorageAccountName</strong>: name of the storage account that the virtual machine will use. </li>
+<li><strong>$AzureCredential</strong>: identifier of the Azure Credential asset (to be created later). The PSCredential object will be created automatically when the Runbook is executed from the Credential asset that matches this identifier.</li>
+<li><strong>$VMName</strong>: name of the virtual machine to be created. The default value is <em>VM-Instance</em>, but the user will be able to change it.</li>
+<li><strong>$VMInstanceSize</strong>: size of the virtual machine. The default value is <em>ExtraSmall</em>, but the user will be able to change it.</li>
+</ul>
+</li>
+</ol>
+<ol>
+<li><p>Now, add the following code below the parameters definition to get and configure the Azure Credentials from the Automation Asset list.</p>
+<pre><code class="lang-PowerShell"> # Get the Azure credentials and connect to Azure #######################################################
+
+ # Get the credential to use for Authentication to Azure and Azure Subscription Name
+ $AzureSubscriptionName = Get-AutomationVariable -Name &#39;Subscription name&#39;
+
+ if($AzureSubscriptionName -eq $null)
+ {
+     throw &quot;No variable asset was found by name &#39;Subscription name&#39;. Please create it.&quot;
+ } 
+
+ # Connect to Azure
+ $AzureAccount = Add-AzureAccount -Credential $AzureCredential
+</code></pre>
+<p> The <strong>Get-AutomationVariable</strong> CmdLet retrieves the variable with the name <em>Subscription name</em>. You will create this variable in the Assets tab of the Automation Account for the Runbook later.</p>
+</li>
+<li><p>Add the following code below the code you just added in order to get the credentials that will be used to access the virtual machine.</p>
+<pre><code class="lang-PowerShell"> # Get the VM credentials ###############################################################################
+
+ $VMCred = Get-AutomationPSCredential -Name &#39;VM credentials&#39;
+ if($VMCred -eq $null)
+ {
+     throw &quot;No Credential asset was found by name &#39;VM credentials&#39;. Please create it.&quot;
+ }
+
+ $VMUserName = $VMCred.UserName
+ $VMPassword = $VMCred.GetNetworkCredential().Password
+</code></pre>
+<p> The <strong>Get-AutomationPSCredential</strong> CmdLet retrieves an object of type PSCredential with the name <em>VM Credentials</em>. As with the $AzureCredentials parameter, you will create an Automation Asset named <em>VM credentials</em>, of type &quot;credentials&quot;, in an upcoming step. </p>
+</li>
+<li><p>Next, add the following code after the code added in the previous step. This code defines an <em>InlineScript</em> block that contains some variable definitions, including the image to be used to create the virtual machine.</p>
+<pre><code class="lang-PowerShell"> InlineScript
+ {
+     $VMUserName = $using:VMUserName
+     $VMPassword = $using:VMPassword
+     $VMName = $using:VMName
+     $VMInstanceSize = $using:VMInstanceSize
+
+     $VMImage = &#39;a699494373c04fc0bc8f2bb1389d6106__Windows-Server-2012-Datacenter-201412.01-en.us-127GB.vhd&#39;
+
+     $AzureAccount = $using:AzureAccount
+     $AzureSubscriptionName = $using:AzureSubscriptionName
+     $ServiceName = $using:ServiceName
+     $StorageAccountName = $using:StorageAccountName
+
+ }
+</code></pre>
+</li>
+<li><p>Add the following code inside the <em>InlineScript</em> block, right below the variable definitions, to retrieve the Storage account that will be used. This code sets the azure subscription to be used as well as the storage account. Additionally, it validates that the storage account exists.</p>
+<pre><code class="lang-PowerShell"> # Set Azure subscription and storage ################################################################
+
+ Set-AzureSubscription -SubscriptionName $AzureSubscriptionName -CurrentStorageAccountName $StorageAccountName
+
+ $storageAccount = Get-AzureStorageAccount | Where-Object { ($_.StorageAccountName -eq $StorageAccountName) }
+ if ($storageAccount -eq $null)
+ {
+     throw &quot;Could not retrieve storage account &#39;{0}&#39;. You need to create it first.&quot; -f $StorageAccountName
+ }
+
+ $Location = $storageAccount.Location
+</code></pre>
+</li>
+<li><p>Finally, add the following code inside the <em>InlineScript</em> block, right below the code added in the previous step. This code will create the virtual machine the same way it was created in the <em>Create virtual machine with PowerShell</em> task.</p>
+<pre><code class="lang-PowerShell"> # Main script ########################################################################################
+
+ # Check whether a VM by name $VMName already exists, if it does not exist create VM
+ Write-Output (&quot;Checking whether VM &#39;{0}&#39; already exists..&quot; -f $VMName)
+
+ $AzureVM = Get-AzureVM -ServiceName $ServiceName -Name $VMName
+ if ($AzureVM -eq $null)
+ {
+     Write-Output (&quot;Creating VM with service name  {0}, VM name {1}, image name {2}, Location {3}&quot; -f $ServiceName, $VMName, $VMImage, $Location)
+
+     # Create VM
+     $CloudServiceInfo = Get-AzureService | Where-Object { ($_.ServiceName -eq $ServiceName) }
+
+     if( $CloudServiceInfo -eq $null)
+     {
+         $AzureVMConfig = New-AzureQuickVM -Windows -ServiceName $ServiceName -Name $VMName -ImageName $VMImage -Password $VMPassword -AdminUserName $VMUserName -Location $Location -InstanceSize $VMInstanceSize -WaitForBoot
+     }
+     else
+     {
+         if ($CloudServiceInfo.Location -eq $Location)
+         {
+             $AzureVMConfig = New-AzureQuickVM -Windows -ServiceName $ServiceName -Name $VMName -ImageName $VMImage -Password $VMPassword -AdminUserName $VMUserName -InstanceSize $VMInstanceSize 
+         }
+         else
+         {
+             throw &quot;Cloud service location does not match the storage account location.&quot;
+         }
+     } 
+
+     $AzureVM = Get-AzureVM -ServiceName $ServiceName -Name $VMName
+     if ($AzureVM -ne $null)
+     {
+         Write-Output (&quot;VM &#39;{0}&#39; was created successfully&quot; -f $VMName)
+     }
+     else
+     {
+         throw &quot;Could not retrieve info for VM &#39;{0}&#39;. VM was not created&quot; -f $VMName
+     }
+ }
+ else
+ {
+     Write-Output (&quot;VM &#39;{0}&#39; already exists.&quot; -f $VMName)
+ }
+</code></pre>
+</li>
+<li><p>Now that the script is complete, publish the Runbook by clicking the <strong>PUBLISH</strong> button in the bottom bar.</p>
+<p> <img class="img-responsive"src="images/publishing-the-runbook.png?raw=true" alt="Publishing the Runbook"></p>
+<p> <em>Publishing the Runbook</em></p>
+</li>
+<li><p>Click <strong>YES</strong> in the confirmation prompt that appears after clicking <strong>PUBLISH</strong>.</p>
+<p> <img class="img-responsive"src="images/saving-and-publishing-the-runbook.png?raw=true" alt="Clicking yes to save and publish the Runbook"></p>
+<p> <em>Clicking yes to save and publish the Runbook</em></p>
+<p> <a name="create-assets"></a>
+ This publishes the Runbook and leaves it one step closer to execution. Now you will add the Assets that will be consumed by the Runbook, and later you will start the Runbook.</p>
+</li>
+<li><p>Navigate to the Automation account by clicking the back arrow above the Runbook name.</p>
+<p> <img class="img-responsive"src="images/navigating-to-the-automation-account.png?raw=true" alt="Navigating to the Automation account"></p>
+<p> <em>Navigating to the Automation account</em></p>
+</li>
+<li><p>Click the <strong>ASSETS</strong> tab.</p>
+<p> <img class="img-responsive"src="images/navigating-to-assets.png?raw=true" alt="Navigating to the Automation Assets tab"></p>
+<p> <em>Navigating to the Automation Assets tab</em></p>
+</li>
+<li><p>Click the <strong>ADD SETTING</strong> button to add a new asset.</p>
+<p> <img class="img-responsive"src="images/adding-a-new-asset.png?raw=true" alt="Adding a new asset"></p>
+<p> <em>Adding a new asset</em></p>
+</li>
+<li><p>In the <strong>ADD SETTING</strong> dialog box, select the <strong>ADD CREDENTIAL</strong> option.</p>
+<p> <img class="img-responsive"src="images/adding-a-credential.png?raw=true" alt="Adding a credential"></p>
+<p> <em>Adding a credential</em></p>
+</li>
+<li><p>In the <strong>ADD CREDENTIAL</strong> dialog box, select <em>Windows PowerShell Credential</em> as Credential Type and type <em>VM credentials</em> as the name. Then click Next.</p>
+<p> <img class="img-responsive"src="images/creating-the-vm-credentials.png?raw=true" alt="Creating the virtual machine credential asset"></p>
+<p> <em>Creating the virtual machine credential asset</em></p>
+</li>
+<li><p>Set the user name and password you want to use for the virtual machine user and click the check button.</p>
+<p> <img class="img-responsive"src="images/setting-the-user-and-password-for-the-vm.png?raw=true" alt="Setting the user name and the password for the virtual machine"></p>
+<p> <em>Setting the user name and the password for the virtual machine</em></p>
+</li>
+<li><p>Repeat the previous steps to add a new credential with the name <em>Azure Credentials</em>. This defines an asset for the credentials that will be used when executing the Runbook. In this case, use the credentials of the organizational account created at the beginning of this task.</p>
+</li>
+<li><p>Now, create a new variable by clicking the <strong>ADD SETTING</strong> button one more time. This time click <strong>ADD VARIABLE</strong>.</p>
+<p> <img class="img-responsive"src="images/adding-a-variable.png?raw=true" alt="Adding a variable"></p>
+<p> <em>Adding a variable</em></p>
+</li>
+<li><p>Select <strong>String</strong> as <strong>VARIABLE TYPE</strong>, type <em>Subscription name</em> in the Name field, and click Next.</p>
+<p> <img class="img-responsive"src="images/creating-a-variable-for-the-subscription-name.png?raw=true" alt="Creating a variable asset for the subscription name"></p>
+<p> <em>Creating a variable asset for the subscription name</em></p>
+</li>
+<li><p>Enter the name of your subscription (i.e.: <em>Free Trial</em>) and click the check button.</p>
+<p> <img class="img-responsive"src="images/setting-the-value-for-the-subscription-name.png?raw=true" alt="Setting the value of the variable with the subscription name"></p>
+<p> <em>Setting the value of the variable with the subscription name</em></p>
+<p> <a name="start-runbook"></a></p>
+</li>
+<li><p>Now that all assets and variables have been created, you will start the Runbook. To do this, navigate to the <strong>RUNBOOKS</strong> tab, make sure that the Runbook you just created is selected, and click the <strong>START</strong> button in the bottom bar.</p>
+<p> <img class="img-responsive"src="images/starting-the-runbook.png?raw=true" alt="Starting the Runbook"></p>
+<p> <em>Starting the Runbook</em></p>
+</li>
+<li><p>Complete all the values in the <strong>START RUNBOOK</strong> dialog box and click Next.</p>
+<blockquote>
+<p><strong>Note:</strong> Each input in the dialog box matches one of the workflow parameter&#39;s and includes a basic type validation. Additionally, the default values are already in place. </p>
+<ul>
+<li><strong>AzureCredential</strong>: identifier for the Azure Credential asset created earlier (e.g. <em>Azure Credentials</em>).</li>
+<li><strong>ServiceName</strong>: cloud service name in which the virtual machine will be created. Type a new name.</li>
+<li><strong>StorageAccountName</strong>: name of the storage account created at the beginning of this task.</li>
+<li><strong>VMInstanceSize</strong>: size of the virtual machine. Leave the default value (<em>ExtraSmall</em>).</li>
+<li><strong>VMName</strong>: name of the virtual machine to be created. Type the desired name or leave the default value (<em>VM-Instance</em>).</li>
+</ul>
+</blockquote>
+<p> <img class="img-responsive"src="images/completing-the-form-in-the-start-runbook.png?raw=true" alt="Completing the form in the START RUNBOOK dialog box"></p>
+<p> <em>Completing the form in the START RUNBOOK dialog box</em></p>
+<p> This will start running the Runbook.</p>
+</li>
+<li><p>Click the <strong>VIEW JOB</strong> button in the notification that is shown.</p>
+<p> <img class="img-responsive"src="images/clicking-the-view-job-button.png?raw=true" alt="Clicking the VIEW JOB button"></p>
+<p> <em>Clicking the VIEW JOB button</em></p>
+</li>
+<li><p>Wait until the job has finished running. This may take a few minutes. You should see a message informing that the vm was created successfully and the status of the job will change to <em>Completed</em>.</p>
+<blockquote>
+<p><strong>Note:</strong> You can switch to the <strong>HISTORY</strong> tab to see more detailed output.</p>
+</blockquote>
+<p> <img class="img-responsive"src="images/waiting-for-the-job-to-complete.png?raw=true" alt="Waiting for the job to complete"></p>
+<p> <em>Waiting for the job to complete</em></p>
+<p> <a name="verify-vm-runbook"></a></p>
+</li>
+<li><p>Finally, navigate to the <strong>Virtual Machines</strong> section of the portal and validate that your new VM is ready.</p>
+<blockquote>
+<p><strong>Note:</strong> you may have to refresh the page by pressing <strong>Ctrl+F5</strong> for the Virtual Machine to show up.</p>
+</blockquote>
+<p> <img class="img-responsive"src="images/validating-that-the-vm-was-created.png?raw=true" alt="Validating that the virtual machine was created"></p>
+<p> <em>Validating that the virtual machine was created</em></p>
+</li>
+</ol>
+<p><a name="creating-a-vm-using-armtemplates"></a></p>
+<p>##Create Virtual Machine using ARM Templates</p>
+<p>In this task you will learn how to create a virtual machine using ARM Templates. </p>
+<p>###Resources and Architecture Diagram:</p>
+<p>The following resources are created by this template:</p>
+<ul>
+<li>1 or 2 Windows 2012R2 IIS Web Servers.</li>
+<li>1 SQL Server 2014 running on premium or standard storage.</li>
+<li>1 virtual network with 2 subnets with NSG rules.</li>
+<li>1 storage account for the VHD files.</li>
+<li>1 Availability Set for IIS servers.</li>
+<li><p>1 Load balancer with NATing rules.</p>
+<p>  <img class="img-responsive"src="images/create-architecture-diagram-vm.png?raw=true" alt="Virtual Machines view in portal"></p>
+<p>  <em>Architecture diagram for ARM Template</em></p>
+</li>
+</ul>
+<p>The below <strong>Deploy to Azure</strong> button embeds an Azure ARM template which creates one or two Windows Server 2012R2 VM(s) with IIS configured using DSC. It also installs one SQL Server 2014 standard edition VM, a VNET with two subnets, NSG, loader balancer, NATing and probing rules.</p>
+<p><a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fazure%2Fazure-quickstart-templates%2Fmaster%2Fiis-2vm-sql-1vm%2Fazuredeploy.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png" /></a></p>
+<p>In order to create virtual machine using ARM, perform the following steps:</p>
+<ol>
+<li><p>Click on the <strong>Deploy to Azure</strong> button which will navigate you to Azure Portal with Custom Deployment.</p>
+<p> <img class="img-responsive"src="images/create-vm-arm-parameters.png?raw=true" alt="Custom deployment and its Parameters"></p>
+<p> <em>Custom Deployment using Azure ARM - using Deploy to Azure button</em></p>
+</li>
+<li><p>On the Custom Deployment blade that opens, enter the parameters:</p>
+<ul>
+<li><strong>ENVPREFIXNAME</strong>: virtual machine name (e.g. azureVM)</li>
+<li><strong>Location</strong>: location for the virtual machine (e.g. West US)</li>
+<li><strong>User Name</strong>: user name for the administrator account (e.g. adminUser)</li>
+<li><strong>Password</strong>: unique password for the administrator account</li>
+<li><strong>WEBSRVVMSIZE</strong>: unique password for the administrator account (e.g. Standard_DS1)</li>
+<li><strong>NUMBEROFWEBSRVS</strong>: unique password for the administrator account (e.g. 1)</li>
+<li><strong>SQLVMSIZE</strong>: unique password for the administrator account (e.g. Standard_DS1)</li>
+<li><strong>STORAGEACCOUNTTYPE</strong>: unique password for the administrator account (e.g. Standard_LRS)</li>
+</ul>
+</li>
+<li><p>Review the default settings, such as the <strong>Subscription</strong>(if you have multiple), <strong>Resource Group</strong>(create or select an existing group), and <strong>Resource Group Location</strong> and finally <strong>Legal Temrs</strong>, then Click <strong>Create</strong> which will add the resource group on to dashboard.</p>
+<p> <img class="img-responsive"src="images/create-vm-arm-dashboard.png?raw=true" alt="Creating a VM using ARM Dashboard"></p>
+<p> <em>Creating the architecture using ARM Template</em></p>
+</li>
+<li><p>In the meanwhile, you can click on <strong>Deploying Template deployment</strong> which was created on the dashboard.</p>
+<p> <img class="img-responsive"src="images/deploying-template-deployment-status.png?raw=true" alt="Status while deploying custom deployment template"></p>
+<p> <em>Azure ARM Template deployment Status</em></p>
+</li>
+<li><p>Once the Template Deployment succeeds, you will have WebServer with IIS Installed and SQL Server 2014 Standard deployed on a Virtual Netowrk with 2 subnets with NSG rules and a Load Balancer with NATing rules. Click on the Resource Group Tile pinned on the dashboard and then click on each resource for more details.</p>
+<p> <img class="img-responsive"src="images/succeeded-arm-template.png?raw=true" alt="Resource Group with all resources"></p>
+<p> <em>Azure ARM Template deployment Succeeds</em></p>
+</li>
+<li><p>Now, the 2-tier architecture is created with all necessary resources, to check whether all the rules are applied we will deploy an ASP.NET application and a Sample Database(AdventureWorks2012).</p>
+<ul>
+<li><p>Click on <strong>dbNsg</strong> which is a Netowork security group and delete the outbound Security rules (Prioirity - 200) - We do this step to download the below AdventureWorks2012 database.</p>
+</li>
+<li><p>Download RDPs for both Database server and Application server and login with the credentails and download the ASP.NET application content into appserver and AdventureWorks2012 database into Database server.</p>
+</li>
+<li><p>A sample ASP.NET Application content can be downloaded here : <a href="http://opsgilitytraining.blob.core.windows.net/armhackathon/cloudshop.zip">application content</a></p>
+</li>
+<li><p>Sample Database can be downloaded here : [AdventureWorks2012] (<a href="http://opsgilitytraining.blob.core.windows.net/public/AdventureWorks2012.bak">http://opsgilitytraining.blob.core.windows.net/public/AdventureWorks2012.bak</a>)</p>
+</li>
+<li><p>Once you download application content onto app server extract the .zip file and copy the content and past in C:\inetpub\wwwroot.</p>
+<p>  <img class="img-responsive"src="images/inetpub.png?raw=true" alt="Copied content into inetpub"></p>
+<p>  <em>Copy content in wwwroot</em></p>
+</li>
+<li><p>Open Database Server, and Open SQL Server Management Studio 2014 login with Windows Authentication for restoring the AdventureWorks2012 database.</p>
+</li>
+<li><p>Copy the .bak file to the Backup location &quot;C:\Program Files\Microsoft SQL Server\MSSQL12.MSSQLSERVER\MSSQL\Backup&quot; and click <strong>OK</strong>.</p>
+<p>  <img class="img-responsive"src="images/backup-database.png?raw=true" alt="Restoring Backup database file"></p>
+<p>  <em>Restoring Backup database file</em></p>
+</li>
+<li><p>In object explorer go to Security section and Login subsection Right Click and New Login and create a user with SQL Server authentication and in the default database select as <strong>AdventureWorks2012</strong></p>
+<p>  <img class="img-responsive"src="images/login-user.png?raw=true" alt="Create a Login user"></p>
+<p>  <em>Create a login user</em></p>
+</li>
+<li><p>On Left side you have <strong>Server Roles</strong> -&gt; Select <strong>public</strong> and <strong>sysadmin</strong> and check in <strong>User Mapping</strong> whether <strong>public</strong> is selected or not and click <strong>OK</strong></p>
+</li>
+<li><p>So till now we have an application content in appserver and database in Database Server. Fianlly we have to setup the NSG Outbound rule which we have deleted earlier to Database Server through portal.</p>
+</li>
+<li><p>In Azure Portal Click on the resource group which we just created and in the resources click on <strong>dbNsg</strong> and click on <strong>All Settings</strong> and Outbound security rules and click on add and fill the details as below:</p>
+<p>  <img class="img-responsive"src="images/addnsgrule-outbound.png?raw=true" alt="Adding a Outbound NSG rule"></p>
+<p>  <em>Adding a Outbound NSG rule</em></p>
+</li>
+<li><p>And Finally login into AppServer and open inetpub\wwwroot and Open <strong>Web.Config</strong> in notepad and replace the <strong>ConnectionString</strong> with the below code:</p>
+<p><code>&lt;add name=&quot;DefaultConnection&quot;
+connectionString=&quot;Data Source=tcp:{Destination-Internal-IP},1433;Initial Catalog=AdventureWorks2012;User ID={User-created-DbServer};Password={password};Encrypt=true;Trusted_Connection=false;TrustServerCertificate=true&quot; providerName=&quot;System.Data.SqlClient&quot;/&gt;    
+&lt;add name=&quot;AdventureWorksEntities&quot; connectionString=&quot;metadata=res://*/Models.AdventureWorks.csdl|res://*/Models.AdventureWorks.ssdl|res://*/Models.AdventureWorks.msl;provider=System.Data.SqlClient;provider connection string=&amp;quot;data source=tcp:{Destination-Internal-IP},1433;initial catalog=AdventureWorks2012;Uid={User-created-DbServer};Password={password};multipleactiveresultsets=True;App=EntityFramework&amp;quot;&quot; providerName=&quot;System.Data.EntityClient&quot; /&gt;</code></p>
+<blockquote>
+<p>NOTE: Before replacing the connection string, do change the following text with respective values</p>
+</blockquote>
+<p>  1) Destination IP address : {Destination-Internal-IP} -&gt; Destination IP
+  2) User ID: {User-created-DbServer} -&gt; User ID for SQL Authentication
+  3) Password: {password} -&gt; Password for SQL Authentication</p>
+</li>
+<li><p>Now you can verify by copying the Loadbalancer IP address onto browser and you will see an asp.net application with data populating from the DB Server.</p>
+<p>  <img class="img-responsive"src="images/output-demo.png?raw=true" alt="Adding a Outbound NSG rule"></p>
+<p>  <em>Output of the application</em></p>
+</li>
+</ul>
+</li>
+</ol>
+<p><a name="cleanup"></a></p>
+<p>##Appendix - Cleanup</p>
+<p>In this task you will learn how to delete the virtual machines created in the previous sections, along with the related data disks created. </p>
+<h3 id="remove-vm-using-azure-portal">Remove VM using Azure Portal</h3>
+<ol>
+<li><p>Scroll to the bottom on the left pane and Click <strong>Browse &gt;</strong>. Then either search in the search box at the top or scroll down and find <strong>Virtual machines (Classic)</strong>.</p>
+<p> <img class="img-responsive"src="images/clicking-browse-virtualmachine.png?raw=true" alt="Clicking Browse in the left pane and search in the box"></p>
+<p> <em>Clicking Browse in the left Menu</em></p>
+</li>
+<li><p>A page listing all Virtual Machines will be displayed. </p>
+<p> <img class="img-responsive"src="images/virtual-machines-view-in-portal.png?raw=true" alt="Virtual Machines view in portal"></p>
+<p> <em>Viewing all virtual machines created</em></p>
+</li>
+<li><p>Click the <strong>...</strong> menu to find the virtual machine to delete and in the context menu that opens, click <strong>Delete</strong>.</p>
+<p> <img class="img-responsive"src="images/deleting-a-virtual-machine.png?raw=true" alt="Deleting a virtual machine"></p>
+<p> <em>Deleting a virtual machine</em></p>
+</li>
+<li><p>In the <strong>Confirmation</strong> blade that opens, type the virtual machine name, select all other items to delete like disks and domain names, and click the <strong>Delete</strong> button.</p>
+<p> <img class="img-responsive"src="images/confirming-the-deletion-of-virtual-machine.png?raw=true" alt="Confirming the deletion of virtual machine"></p>
+<p> <em>Confirming the deletion of the virtual machine</em></p>
+</li>
+</ol>
+<p>The virtual machine as well as other items selected in the previous step will be deleted. You can monitor the progress of this operation from the <strong>Notifications</strong> Hub.</p>
+<p>Once complete, the <strong>Virtual Machines</strong> list will refresh and the virtual machine recently deleted will no longer appear. Follow the same instructions to delete all other virtual machines created in this lab.</p>
+<p>##Summary</p>
+<p>By completing this lab you have learned how to create virtual machines using several different methods: the Azure Portal interface, the Cross-Platform Command Line Tools, PowerShell and Automation Runbook. Additionally, you have seen how to attach an empty datadisk to the virtual machine, how to generate a Remote Desktop Protocol file to connect to the machine, and how to install extensions.</p>
+
+      </div>
+  </body>
+</html>

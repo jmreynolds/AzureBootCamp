@@ -1,0 +1,266 @@
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>AzureReadiness: DevCamp</title>
+	  <link rel="stylesheet" href="../../style.css">
+   </head>
+   <body>
+      <div class="container">
+        <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="../../README.htm">Home</a>
+            </div>
+        </header>
+        <div class="jumbotron"><h1 id="etl-in-hortonworks-sandbox-on-azure">ETL in Hortonworks Sandbox on Azure</h1></div>
+<p>In this <strong>lab</strong>, you will create a <strong>Hortonworks Sandbox Virtual Machine</strong> and an <strong>Azure SQL Database</strong> from the <strong>Azure Marketplace</strong>. 
+You will then extract data from Azure SQL Database into the Hortonworks Sandbox using Sqoop. 
+You will then load data into a Hive table in Hadoop.  </p>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li>Client computer with Internet connectivity.</li>
+<li>A Microsoft Azure Subscription, you can create a free trial here <a href="http://Azure.microsoft.com/en-us/pricing/free-trial/readme.htm">Azure Trail</a>, 
+or you can use a subscription from your organization’s EA agreement.</li>
+<li>Windows client computers will need an SSH client to complete the lab. 
+Alternatively you may use the web based <strong>SSH client</strong> built into the <strong>Hortonworks Sandbox</strong>.<ul>
+<li>Git Bash with SSH client from <a href="http://www.git-scm.com/downloads/readme.htm">http://www.git-scm.com/downloads</a></li>
+<li>[PuTTY] (<a href="http://www.putty.org/readme.htm">http://www.putty.org/</a>), and [AnyConnect] (<a href="http://anyconnect.net/Default.aspx">http://anyconnect.net/Default.aspx</a>) amongst others.</li>
+</ul>
+</li>
+</ul>
+<h2 id="objectives">Objectives</h2>
+<p>To create a credit risk
+assessment solution, we&#39;ll follow these steps through a series of tasks:</p>
+<ul>
+<li>Creating an Azure Environment</li>
+<li>Create an SQL Azure Database</li>
+<li>Create a Virtual Machine with Hortonworks Sandbox</li>
+<li>Configure your Azure SQL Database for remote connectivity.</li>
+<li>Transfer data using Sqoop</li>
+<li>Validate Lab Completion.</li>
+</ul>
+<!-- -->
+<p>###Task 1: Azure - Environment Setup</p>
+<p>In this exercise, you will use your Microsoft or Organization account to login to the Azure preview portal to start the lab exercise.</p>
+<ol>
+<li><p>Launch an <strong>In-Private Browser Window</strong> and navigate to
+<a href="https://portal.azure.com">https://portal.azure.com</a> . The following page should load.</p>
+</li>
+<li><p>Enter the account associated with your Microsoft Azure subscription.</p>
+<p><img class="img-responsive"src="images/image1.png" alt=""></p>
+</li>
+<li><p>If your account is associated with an organization account and a Microsoft account, 
+you may be prompted to choose which one to authenticate with for your Microsoft Azure account. </p>
+<p><img class="img-responsive"src="images/image2.png" alt=""></p>
+</li>
+</ol>
+<p>###</p>
+<p>###Task 2: Create an SQL Azure Database</p>
+<p>In this exercise, you will create an Azure SQL Database in Azure Marketplace.</p>
+<ol>
+<li><p>Click the <strong>+New</strong> button from the portal, then click <strong>Data + Storage</strong> and choose <strong>SQL Database</strong> from the Marketplace.</p>
+<p><img class="img-responsive"src="images/image3.png" alt=""></p>
+</li>
+<li><p>The Azure portal will open the <strong>SQL Database</strong> blade. 
+Type <em>AdventureWorks</em> into the <strong>Name</strong> box. Choose <strong>Server</strong>, and then <strong>Create a new server</strong>. 
+Specify the following <strong>New Server</strong> configurations and click <strong>OK</strong>.</p>
+<ul>
+<li><strong>Server Name</strong>: <Unique server name for your Azure SQL Database></li>
+<li><strong>Server Admin Login</strong>: demouser</li>
+<li><strong>Password</strong>: demo@pass1</li>
+<li><strong>Location</strong>: <Location nearest to you></li>
+<li><strong>Create V12 Server</strong>: Yes</li>
+<li><strong>Allow Azure Services to Access Server</strong>: Checked</li>
+</ul>
+<p><img class="img-responsive"src="images/image4.png" alt=""></p>
+</li>
+<li><p><strong>Note the Server Name of the SQL Database</strong> for later reference. </p>
+</li>
+<li><p>Choose <strong>Select Source</strong>, then select <strong>Sample</strong>. Choose <strong>Select Sample</strong>, then select <strong>AdventureWorksLT [V12]</strong>.</p>
+<p><img class="img-responsive"src="images/image5.png" alt=""></p>
+<p><img class="img-responsive"src="images/image6.png" alt=""></p>
+</li>
+<li><p>Choose <strong>Resource Group</strong>, then select <strong>Create a New Resource Group</strong>. Type <strong>AzureData</strong> for the Resource Group name and click <strong>OK</strong>.</p>
+<p><img class="img-responsive"src="images/image7.png" alt=""></p>
+</li>
+<li><p>Verify the following SQL Database configurations and click <strong>Create</strong>. </p>
+<ul>
+<li><strong>Name</strong>: AdventureWorks</li>
+<li><strong>Server</strong>: <Unique server name for you Azure SQL Database></li>
+<li><strong>Select Source</strong>: Sample</li>
+<li><strong>Select Sample</strong>: AdventureWorksLT [V12]</li>
+<li><strong>Pricing Tier</strong>: Standard S0</li>
+<li><strong>Resource Group</strong>: AzureData</li>
+<li><strong>Subscription</strong>: <your subscription, if you have multiple subscriptions></li>
+</ul>
+</li>
+<li><p>Now you will see that the SQL Database is being created, as per the status on portal dashboard.</p>
+<p><img class="img-responsive"src="images/image8.png" alt=""></p>
+</li>
+<li><p>Wait until the status of Azure SQL Database is <strong>‘Online’</strong>. </p>
+<p><img class="img-responsive"src="images/image9.png" alt=""></p>
+</li>
+</ol>
+<p>###</p>
+<p>###Task 3: Create a Virtual Machine with Hortonworks Sandbox</p>
+<p>In this exercise, you will create a virtual machine using the <strong>‘Hortonworks Sandbox with HDP’</strong> image available in Azure Marketplace.</p>
+<ol>
+<li><p>Click the <strong>+New</strong> button from the portal. Type <strong>Hortonworks Sandbox</strong> in the <strong>Search</strong> filter and press <strong>Enter</strong>.</p>
+<p><img class="img-responsive"src="images/image10.png" alt=""></p>
+</li>
+<li><p>From the search result, click <strong>Hortonworks Sandbox with HDP</strong>.</p>
+<p><img class="img-responsive"src="images/image11.png" alt=""></p>
+</li>
+<li><p>In the <strong>Select a Deployment model</strong> dropdown verify that <strong>Classic</strong> is selected. Read the description then click the <strong>Create</strong> button.</p>
+<p><img class="img-responsive"src="images/image12.png" alt=""></p>
+</li>
+<li><p>Specify the following configuration options in the Create VM blade.</p>
+<ul>
+<li><strong>Name</strong>: hortonworks-sandbox-vm</li>
+<li><strong>User Name</strong>: demouser</li>
+<li><strong>Authentication Type</strong>: Password</li>
+<li><strong>Password</strong>: demo@pass1</li>
+<li><strong>Resource Group</strong>: AzureData</li>
+<li><strong>Location</strong>: Will be auto-selected to match the resource group.</li>
+</ul>
+<p><img class="img-responsive"src="images/image13.png" alt=""></p>
+</li>
+<li><p>For the <strong>Pricing Tier</strong> configuration, select <strong>A5 Standard</strong> and click <strong>Select</strong>.</p>
+<p><img class="img-responsive"src="images/image14.png" alt=""></p>
+</li>
+<li><p>For <strong>Legal terms</strong>, review the terms and click <strong>Purchase</strong>.</p>
+<p><img class="img-responsive"src="images/image15.png" alt=""></p>
+</li>
+<li><p>Verify your <strong>Create VM Configuration</strong>, and click <strong>Create</strong>.</p>
+<p><img class="img-responsive"src="images/image16.png" alt=""></p>
+</li>
+<li><p>Now you will see that the new virtual machine is creating, as per the status on portal dashboard.</p>
+<p><img class="img-responsive"src="images/image17.png" alt=""></p>
+</li>
+<li><p>Wait until the status of created virtual machine is <strong>‘Running’</strong>.<br>Note: It may take 10-15 minutes for the virtual machine to complete provisioning.</p>
+<p><img class="img-responsive"src="images/image18.png" alt=""></p>
+</li>
+<li><p>If the portal does not refresh, click <strong>Virtual Machines (Classic)</strong> to see the latest status of the Virtual Machine. 
+Wait until the status turns to <strong>‘Running’</strong>.    </p>
+<p><img class="img-responsive"src="images/image19.png" alt=""></p>
+</li>
+<li><p>Once the virtual machine is in status <strong>‘Running’</strong>, click on the <strong>Virtual Machine Name</strong> and go to details.</p>
+<p><img class="img-responsive"src="images/image20.png" alt=""></p>
+</li>
+<li><p><strong>Note the Virtual IP Address of the Hortonworks Sandbox Virtual Machine</strong> as you will reference it in the next step and future steps.</p>
+</li>
+<li><p>Launch a browser and navigate to the virtual IP address of the virtual machine using port 4200 
+(<a href="http://[Virtual/readme.htm">http://[Virtual</a> IP of the Hortonworks VM]:4200). This will connect you to the built-in SSH client 
+on your Hortonworks Sandbox VM. Login by entering <strong>demouser</strong> for the <strong>login</strong> and <strong>demo@pass1</strong> for the password.  </p>
+<p><img class="img-responsive"src="images/image21.png" alt=""></p>
+</li>
+<li><p>Enter the following command download and extract the SQL Server JDBC driver.</p>
+<p><code>curl -L &#39;https://download.microsoft.com/download/0/2/A/02AAE597-3865-456C-AE7F-613F99F850A8/sqljdbc_4.2.6420.100_enu.tar.gz&#39; | tar xz</code></p>
+<blockquote>
+<p>NOTE:
+<em>You can copy this command into your clipboard and then paste it into the terminal window open in your browser.  Simply right-click anywhere in the 
+browser terminal window and select Paste from Browser and then paste the copied text the box provided.  This will copy the text into the terminal then 
+click Enter on your keyboard to execute the command.</em></p>
+</blockquote>
+</li>
+<li><p>In the next step, copy the extracted SQL JDBC drivers to /usr/hdp/current/sqoop-client/lib. 
+<em>Note that use of the sudo command will require you to reenter your password</em>.</p>
+<p><code>sudo cp sqljdbc_4.2/enu/*.jar /usr/hdp/current/sqoop-client/lib</code></p>
+<p>The Shell will then resemble the next screen</p>
+<p><img class="img-responsive"src="images/image22.png" alt=""></p>
+</li>
+<li><p>Execute the following commands to navigate to <strong>/usr/hdp/current/sqoop-client/lib</strong> to verify that the JDBC drivers are installed.</p>
+<p><code>cd /usr/hdp/current/sqoop-client/lib</code></p>
+<p><code>ls -l sqljdbc*</code></p>
+<p>The screen will resemble below.
+<img class="img-responsive"src="images/image23.png" alt=""></p>
+</li>
+<li><p>Restart the Hortonworks Sandbox VM so that the new driver will become available.<br>In the Portal click, <strong>Virtual machines (Classic)</strong> and then click the <strong>hortonworks-sandbox-vm</strong>.<br>When the Blade for the VM loads click <strong>Restart</strong>.</p>
+<p><img class="img-responsive"src="images/image24.png" alt=""></p>
+</li>
+</ol>
+<p>###</p>
+<p>###Task 4: Configure your Azure SQL Database for remote connectivity</p>
+<p>In this task, you will configure the firewall for your Azure SQL Database through the Azure Portal. </p>
+<ol>
+<li><p>Open the <strong>AdventureWorks Azure SQL Database</strong> you created in Task 2.</p>
+<p><img class="img-responsive"src="images/image25.png" alt=""></p>
+</li>
+<li><p>This will open the <strong>AdventureWorks</strong> details. Click on the <strong>Server Name</strong> of the AdventureWorks database.</p>
+<p><img class="img-responsive"src="images/image26.png" alt=""></p>
+</li>
+<li><p>This will open the details blade of your server. Click <strong>All Settings</strong>, then choose <strong>Firewall</strong>.</p>
+<p><img class="img-responsive"src="images/image27.png" alt=""></p>
+</li>
+<li><p>In the Firewall settings enter the following values then click Save:</p>
+<ul>
+<li><strong>Rule Name</strong>: HDP</li>
+<li><strong>Start IP</strong>: [Virtual IP of your Hortonworks VM]</li>
+<li><strong>End IP</strong>: [Virtual IP of your Hortonworks VM]</li>
+</ul>
+<blockquote>
+<p>Note: The Start IP and End IP will be the same value.</p>
+</blockquote>
+<p><img class="img-responsive"src="images/image28.png" alt=""></p>
+<blockquote>
+<p>NOTE:<br><em>If for some reason the Hortonworks VM is stopped (not just restarted) from within the portal and then started again it could have a different Virtual IP address as assigned dynamically.
+If this is the case, you will need to update this rule’s Start IP and End IP</em>. </p>
+</blockquote>
+</li>
+</ol>
+<p>###</p>
+<p>###Task 5: Transfer data using Sqoop</p>
+<p>In this task you will login to the Hortonworks Sandbox VM and transfer data from your Azure SQL Database into a Hive table.</p>
+<ol>
+<li><p>Connect to the Hortonworks Sandbox VM’s SSH session by clicking the 
+Connect button within the browser that was connected before the VM restarted, 
+or by launching your browser and navigating to <a href="http://[Virtual/readme.htm">http://[Virtual</a> IP of Hortonworks VM]:4200 
+(replace the placeholder value with the IP you saved earlier). </p>
+</li>
+<li><p>Execute the following command to view the available databases in your Azure SQL Database. 
+Replace the placeholder value with the name of your Azure SQL Database Server that you created and noted in Task 2.</p>
+<p><code>*sqoop list-databases --connect jdbc:sqlserver://[AdventureWorks SQL Database Server Name].database.windows.net:1433 --username demouser --password demo@pass1*</code></p>
+<p>Below you can see that we have the AdventureWorks database available.
+<img class="img-responsive"src="images/image29.png" alt=""></p>
+</li>
+<li><p>Next, extract data from our AdventureWorks database into a Hive table by executing the following command. 
+<strong>Replace the placeholder value</strong> using the SQL Database name you saved earler.</p>
+<p><code>sudo -u hdfs sqoop import --connect &quot;jdbc:sqlserver://[AdventureWorks SQL Database Server Name].database.windows.net:1433;database=AdventureWorks;user=demouser;password=demo@pass1;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;&quot; --table SalesOrderDetail --hive-import -- --schema SalesLT</code></p>
+<p>The output from the above command should return output like this.  If you scroll back through the output you will see job metrics, error and warning information, etc. 
+<img class="img-responsive"src="images/image30.png" alt=""></p>
+</li>
+<li><p>Query data from the SalesOrderDetail Hive table. Navigate to the Hue interface of your Hortonworks Sandbox VM.<br>This is located by browsing to the <strong>Virtual IP</strong> of the Hortonworks Sandbox VM using port 8000 <a href="http://[Virtual/readme.htm">http://[Virtual</a> IP of Hortonworks VM]:8000.</p>
+</li>
+<li><p>Next Click the <strong>Beeswax</strong> icon.  This will open the Query Editor window.</p>
+<p><img class="img-responsive"src="images/image31.png" alt=""></p>
+</li>
+<li><p>In the Query Editor type the following query in the space provided and click the Execute button.</p>
+<p><code>SELECT * FROM SalesOrderDetail</code></p>
+<p><img class="img-responsive"src="images/image32.png" alt=""></p>
+<p><img class="img-responsive"src="images/image33.png" alt=""></p>
+</li>
+</ol>
+<p>###</p>
+<h3 id="task-6-validate-lab-completion">Task 6: Validate Lab Completion</h3>
+<ol>
+<li><p>Create a screenshot that shows the essentials panel from within the Azure Portal of your Hortonworks Sandbox virtual machine instance. </p>
+<p><img class="img-responsive"src="images/image34.png" alt=""></p>
+</li>
+<li><p>Next take a screenshot of the web-based SSH connection to the Hortonworks Sandbox instance using the same IP address as the previous screenshot.</p>
+<p><img class="img-responsive"src="images/image35.png" alt=""></p>
+</li>
+<li><p>A screenshot of the output of the following query from the Beeswax interface using the same IP.</p>
+<blockquote>
+<p>SELECT * FROM SalesOrderDetail</p>
+</blockquote>
+<p><img class="img-responsive"src="images/image36.png" alt=""></p>
+</li>
+</ol>
+<p>##Summary</p>
+<p>In this lab, you have created a Hortonworks Sandbox virtual machine from the Microsoft Azure Marketplace and an Azure SQL Database sample. 
+You extracted data from the Azure SQL Database into a Hive table and queried the data from Hive</p>
+
+      </div>
+  </body>
+</html>

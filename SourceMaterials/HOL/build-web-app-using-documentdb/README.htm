@@ -1,0 +1,811 @@
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>AzureReadiness: DevCamp</title>
+	  <link rel="stylesheet" href="../../style.css">
+   </head>
+   <body>
+      <div class="container">
+        <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="../../README.htm">Home</a>
+            </div>
+        </header>
+        <div class="jumbotron"><h1 id="building-a-web-application-with-asp-net-mvc-using-documentdb">Building a web application with ASP.NET MVC using DocumentDB</h1></div>
+<p><strong>Azure DocumentDB</strong> is a fully-managed, highly-scalable, NoSQL document database service provided by Azure. Its many benefits include rich query over a schema-free JSON data model, transactional execution of JavaScript logic, and scalable storage and throughput. You can find out more about DocumentDB online in the <a href="http://azure.microsoft.com/en-us/services/documentdb/readme.htm">Microsoft Azure subsite for DocumentDB</a>.</p>
+<p>In this lab, you will learn how to build a todo list web application using Azure DocumentDB. The task items will be stored as JSON documents in Azure DocumentDB. The web application is a C# MVC application, in which you will wire the basic CRUD operations to methods that use DocumentDB and then publish as an Azure website.</p>
+<p>This lab includes instructions for the following tasks:</p>
+<ul>
+<li><a href="#creating-a-documentdb-database-account">Creating a DocumentDB database account</a></li>
+<li><a href="#creating-a-new-aspnet-mvc-app">Creating a new ASP.NET MVC application</a></li>
+<li><a href="#adding-documentdb-to-your-project">Adding DocumentDB to your project</a></li>
+<li><a href="#setting-up-the-aspnet-mvc-app">Setting up the ASP.NET MVC application</a></li>
+<li><a href="#wiring-up-documentdb">Wiring up DocumentDB</a></li>
+<li><a href="#running-the-application-locally">Running the application locally</a></li>
+<li><a href="#deploying-the-app-to-azure">Deploying the application to Azure Websites</a></li>
+<li><a href="#cleanup">Appendix - Cleanup</a></li>
+</ul>
+<p><a name="creating-a-documentdb-database-account"></a></p>
+<h2 id="creating-a-documentdb-database-account">Creating a DocumentDB database account</h2>
+<p>To use Microsoft Azure DocumentDB, you must create a DocumentDB account.  This task describes how to create a DocumentDB account in the Azure preview management portal.</p>
+<ol>
+<li><p>Sign in to the <a href="https://portal.azure.com/readme.htm">preview management portal</a>.</p>
+</li>
+<li><p>Click <strong>NEW</strong> and select <strong>Data + storage</strong>, then  <strong>DocumentDB</strong> in order to create a new DocumentDB account.  </p>
+<p> <img class="img-responsive"src="./images/creating-a-new-documentdb-account.png" alt="Creating a DocumentDB account"></p>
+<p> <em>Creating a DocumentDB account</em></p>
+<blockquote>
+<p><strong>Note:</strong> Alternatively, from the Startboard, you can browse the Azure Marketplace, select the “Data analytics” category, choose <strong>DocumentDB</strong> and then click <strong>Create</strong>.</p>
+<p><img class="img-responsive"src="./images/creating-a-documentdb-from-market.png" alt="Creating a DocumentDB Account from the Azure Marketplace"></p>
+<p><em>Creating a DocumentDB Account from the Azure Marketplace</em></p>
+</blockquote>
+<p> This will open the <strong>New DocumentDB (Preview)</strong> blade.</p>
+</li>
+<li><p>In the <strong>New DocumentDB (Preview)</strong> blade, enter a name to identify the DocumentDB account in the <strong>Id</strong> box (e.g.: <em>your-documentdb</em>) and specify the geographic location where your DocumentDB account will be hosted (e.g.: <em>West US</em>). You can update other configuration options based on the information below. Then click <strong>Create</strong>.</p>
+<p> <img class="img-responsive"src="./images/new-documentdb-blade.png?raw=true" alt="Configuring the DocumentDB account"></p>
+<p> <em>Configuring the DocumentDB account</em></p>
+<blockquote>
+<p><strong>Note:</strong> In the <strong>New DocumentDB (Preview)</strong> blade you can find the following options to be configured for a new DocumentDB account configuration:</p>
+<ul>
+<li><p><strong>Id</strong>: Name that identifies the DocumentDB account. This value becomes the host name within the URI. The Id can contain only lowercase letters, numbers, and the &#39;-&#39; character, and must be between 3 and 50 characters long. Note that documents.azure.com is appended to the endpoint name you choose to craft your DocumentDB account endpoint.</p>
+</li>
+<li><p><strong>Pricing Tier</strong>: Standard. This lens is locked because the DocumentDB preview supports a single standard pricing tier. For more information, see <a href="http://go.microsoft.com/fwlink/p/?LinkID=402317&amp;clcid=0x409/readme.htm">DocumentDB pricing</a>.</p>
+</li>
+<li><p><strong>Optional configuration</strong>: This lens is used to specify the initial capacity allocated to your DocumentDB account. DocumentDB leverages capacity units to allow you to scale your DocumentDB account, where each capacity unit includes reserved database storage and throughput. By default, 1 capacity unit is provisioned. You can adjust the number of capacity units available to your DocumentDB account at any time via the <a href="https://portal.azure.com/readme.htm">preview management portal</a>. For details about DocumentDB account capacity and throughput, please see the <a href="http://azure.microsoft.com/en-us/documentation/articles/documentdb-manage/readme.htm">Manage DocumentDB capacity and performance</a> article.</p>
+</li>
+<li><p><strong>Resource group</strong>: The resource group for your DocumentDB account.  By default, a new Resource group will be created. You may, however, choose to add your DocumentDB account to an existing resource group. For more information, see <a href="http://azure.microsoft.com/en-us/documentation/articles/azure-preview-portal-using-resource-groups/readme.htm">Using resource groups to manage your Azure resources</a>.</p>
+</li>
+<li><p><strong>Subscription</strong>: The Azure subscription that you want to use for the DocumentDB account. If your account has only one subscription, it will be selected automatically.</p>
+</li>
+<li><p><strong>Location</strong>: The geographic location where your DocumentDB account will be hosted.</p>
+</li>
+</ul>
+</blockquote>
+<p> The DocumentDB account will be created. As this can take some time, you will proceed with the creation of the project and come back to retrieve some necessary information later, once the account creation has completed. Leave the browser open. You can monitor the creation progress on the <strong>Notifications</strong> Hub from time to time, if you wish to.</p>
+<p> <img class="img-responsive"src="./images/checking-the-creation-status-notification-hub.png?raw=true" alt="Checking the creation status in the Notification Hub"></p>
+<p> <em>Checking the creation status in the Notification Hub</em></p>
+</li>
+</ol>
+<p>In the next section you will be guided step by step to create a new ASP.NET MVC application from the ground up.</p>
+<p><a name="creating-a-new-aspnet-mvc-app"></a></p>
+<h2 id="creating-a-new-asp-net-mvc-application">Creating a new ASP.NET MVC application</h2>
+<p>In this task you will create a new ASP.NET MVC project and configure a Microsoft Azure Website where it will be deployed.</p>
+<ol>
+<li><p>Open Visual Studio and from the <strong>File</strong> menu, hover over the <strong>New</strong> option and click <strong>Project</strong>.</p>
+<p> <img class="img-responsive"src="./images/newProject.png" alt="Creating a New Project"></p>
+<p> <em>Creating a New Project</em></p>
+<blockquote>
+<p><strong>Note:</strong> You can open the end solution from <a href="end/Todo/readme.htm">end/Todo</a> and configure it according to the instructions in <a href="end/readme.htm">Setting up the end solution</a>.</p>
+</blockquote>
+</li>
+<li><p>In the <strong>New Project</strong> dialog box, select <strong>ASP.NET Web Application</strong> under the <strong>Visual C# | Web</strong> tab. Make sure <strong>.NET Framework 4.5</strong> is selected.
+Name the project <em>Todo</em>, choose a <strong>Location</strong> and click <strong>OK</strong>.</p>
+<blockquote>
+<p><strong>Note:</strong> You may also want to uncheck the <strong>Add Application Insights to Project</strong> if you don&#39;t want the functionality for your application.</p>
+</blockquote>
+<p> <img class="img-responsive"src="images/creating-a-new-aspnet-web-application-project.png?raw=true" alt="Creating a new ASP.Net Web Application project"></p>
+<p> <em>Creating a new ASP.NET Web Application project</em></p>
+</li>
+<li><p>In the <strong>New ASP.NET Project</strong> dialog box, select <strong>MVC</strong>. Make sure that the <strong>Host in the cloud</strong> option is also selected, and change the Authentication method to <strong>No Authentication</strong>. Click <strong>Ok</strong>.</p>
+<p> <img class="img-responsive"src="images/creating-a-new-mvc-project.png?raw=true" alt="Creating a new MVC project"></p>
+<p> <em>Creating a new project with the MVC template</em></p>
+<blockquote>
+<p><strong>Note 1:</strong> Selecting the <em>Host in the cloud</em> option will preprovision an Azure Website for you and make life a lot easier when the time comes to deploy the final working application. If you want to host this elsewhere or don&#39;t want to configure Azure upfront, then just clear Host in the Cloud.</p>
+<p><strong>Note 2</strong>: You might be prompted to sign in to Visual Studio with your Microsoft account. If so, enter your credentials and click Sign in.</p>
+<p><strong>Note 3</strong>: This hands on lab will work with either Visual Studio 2013 or Visual Studio 2015. If you are using Visual Studio 2015 and don&#39;t see the <em>Host in the Cloud</em> option, the most likely reason is that you need to install the <a href="http://go.microsoft.com/fwlink/?linkid=518003&amp;clcid=0x409/readme.htm">latest release of the Microsoft Azure SDK for Visual Studio 2015</a>.</p>
+</blockquote>
+</li>
+<li><p>The <strong>Configure Microsoft Azure Website</strong> dialog box will appear, using an auto-generated site name. Select a region (e.g.: <em>West US</em>). Also take note of which account you are currently signed into in the dialog box. You want to make sure that this is the account your Azure subscription is attached to (usually a Microsoft account).</p>
+<p> This project does not require a database, as it will be using a new Azure DocumentDB account created later in the Azure Preview portal, so make sure <strong>No database</strong> is selected in the <strong>Database server</strong> field.</p>
+</li>
+<li><p>Click <strong>OK</strong>.</p>
+<p> <img class="img-responsive"src="images/configuring-microsoft-azure-website.png?raw=true" alt="Configuring Microsoft Azure Website"></p>
+<p> <em>Configuring Microsoft Azure Website</em></p>
+</li>
+</ol>
+<p>The project will be created, and the authentication options and Azure Website options will be automatically configured with the project. The ASP.NET application can be run locally, if desired.</p>
+<p>Next you will add DocumentDB to this project and build the application.</p>
+<p><a name="adding-documentdb-to-your-project"></a></p>
+<p>##Adding DocumentDB to your project</p>
+<p>In this task you will add the Azure DocumentDB SDK to the application.</p>
+<p>The DocumentDB .NET SDK is packaged and distributed as a NuGet package. To get the NuGet package in Visual Studio, use the NuGet Package Manager in Visual Studio.</p>
+<ol>
+<li><p>Right-click the <strong>Todo</strong> project in the Solution Explorer and then select <strong>Manage NuGet Packages</strong> to open the NuGet Package Manager dialog box.</p>
+<p> <img class="img-responsive"src="images/opening-manage-nuget-packages.png?raw=true" alt="Opening Manage NuGet Packages"></p>
+<p> <em>Opening Manage NuGet Packages</em></p>
+</li>
+<li><p>In the Search box, type <strong>Azure DocumentDB</strong>. From the results, select the <strong>Microsoft Azure DocumentDB Client Libraries</strong> package that has id <strong>Microsoft.Azure.Documents.Client</strong> and click <strong>Install</strong>.</p>
+<p> This will download and install the DocumentDB client package as well as all dependencies, like Newtonsoft.Json.</p>
+<blockquote>
+<p><strong>Note:</strong> While the service is still in preview, the NuGet package is marked as &quot;Prerelease&quot;, so you need to enable the &quot;Include Prerelease&quot; option in order to be able to find the package.</p>
+</blockquote>
+<p> <img class="img-responsive"src="images/installing-microsoft-azure-documentdb.png?raw=true" alt="Installing the Microsoft Azure DocumentDB Client Libraries">
+ <em>Installing the Microsoft Azure DocumentDB Client Libraries</em></p>
+<blockquote>
+<p><strong>Note:</strong> Alternatively, you can use the Package Command Console to install the package by typing the following:</p>
+<pre><code class="lang-PowerShell"> Install-Package Microsoft.Azure.Documents.Client -Pre
+</code></pre>
+</blockquote>
+</li>
+<li><p>You will be prompted to accept the license. Click <strong>I Accept</strong>.</p>
+<p> <img class="img-responsive"src="images/accepting-the-license-for-ms-azure-documents.png?raw=true" alt="Accepting the license for Microsoft Azure Documents Client"></p>
+<p> <em>Accepting the License for Microsoft.Azure.Documents.Client</em></p>
+</li>
+<li><p>Once the package is installed, verify that two new references have been added to the <strong>Todo</strong> project:  <em>Microsoft.Azure.Documents.Client</em> and <em>Newtonsoft.Json</em>. Your Visual Studio solution should resemble the following:</p>
+<p> <img class="img-responsive"src="images/references-added-to-the-solution.png?raw=true" alt="References added to the solution"></p>
+<p> <em>References added to the Solution</em></p>
+</li>
+</ol>
+<p><a name="setting-up-the-aspnet-mvc-app"></a></p>
+<p>##Setting up the ASP.NET MVC application</p>
+<p>In this task you will set up the ASP.Net MVC application by adding a model, a controller and several views.</p>
+<p>###Adding a model###</p>
+<ol>
+<li><p>In <strong>Solution Explorer</strong>, right-click the <strong>Models</strong> folder of the <strong>Todo</strong> project and select <strong>Add</strong>. Then click <strong>Class...</strong>.</p>
+<p> <img class="img-responsive"src="images/adding-a-model.png?raw=true" alt="Adding a Model"></p>
+<p> <em>Adding a new model class</em></p>
+</li>
+<li><p>In the <strong>Add New Item</strong> dialog box, set the name of the file as <em>Item.cs</em> and click <strong>Add</strong>.  </p>
+<p> <img class="img-responsive"src="images/creating-the-item-class.png?raw=true" alt="Creating the Item class"></p>
+</li>
+<li><p>Replace the content of the new <strong>Item.cs</strong> file with the following.</p>
+<pre><code class="lang-C#"> namespace Todo.Models
+ {
+      using Newtonsoft.Json;
+
+      public class Item
+      {
+           [JsonProperty(PropertyName = &quot;id&quot;)]
+           public string Id { get; set; }
+
+           [JsonProperty(PropertyName = &quot;name&quot;)]
+           public string Name { get; set; }
+
+           [JsonProperty(PropertyName = &quot;desc&quot;)]
+           public string Description { get; set; }
+
+           [JsonProperty(PropertyName = &quot;isComplete&quot;)]
+           public bool Completed { get; set; }
+      }
+ }
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong> All data in DocumentDB is passed over the wire and stored as JSON. To control the way your objects are serialized/deserialized by JSON.NET you can use the JsonProperty attribute as demonstrated in the Item class we just created. This is optional. Moreover, you can use JsonConverter objects to completely control how serialization is handled.</p>
+</blockquote>
+</li>
+</ol>
+<p>###Adding a controller###</p>
+<ol>
+<li><p>In <strong>Solution Explorer</strong>, right-click the <strong>Controllers</strong> folder of the <strong>Todo</strong> project, click <strong>Add</strong>, and then click <strong>Controller...</strong>.</p>
+<p> <img class="img-responsive"src="images/adding-a-controller.png?raw=true" alt="Adding a Controller"></p>
+<p> <em>Adding a Controller</em></p>
+</li>
+<li><p>In the <strong>Add Scaffold</strong> dialog box, select <strong>MVC 5 Controller - Empty</strong> and then click <strong>Add</strong>.</p>
+<p> <img class="img-responsive"src="images/add-scaffold.png?raw=true" alt="Add Scaffold"></p>
+<p> <em>Adding the Scaffold</em></p>
+</li>
+<li><p>Name your new Controller, <strong>ItemController</strong> and click <strong>Add</strong>.</p>
+<p> <img class="img-responsive"src="images/naming-the-new-controller.png?raw=true" alt="Naming the new Controller"></p>
+<p> <em>Naming the new Controller</em></p>
+</li>
+<li><p>Once the file is created, in <strong>Solution Explorer</strong> your Visual Studio solution should resemble the following with the new <strong>Item.cs</strong> and <strong>ItemController.cs</strong> files just added.</p>
+<p> <img class="img-responsive"src="images/solution-after-adding-model-and-controller.png?raw=true" alt="Solution after adding model and controller"></p>
+<p> <em>Solution after adding the model and the controller</em></p>
+</li>
+</ol>
+<p>###Adding views###
+Now you will add several views to make it possible to list, edit, delete and view the details of the existing To Do items and create new ones.</p>
+<p>####Adding an Item Index View####</p>
+<ol>
+<li><p>In <strong>Solution Explorer</strong>, expand the <strong>Views</strong> folder. Right-click the empty <strong>Item</strong> folder, click <strong>Add</strong>, and then click <strong>View...</strong>.</p>
+<p> <img class="img-responsive"src="images/adding-a-new-view.png?raw=true" alt="Adding a new View"></p>
+<p> <em>Adding a new View</em></p>
+</li>
+<li><p>In the <strong>Add View</strong> dialog box, complete the following options and then click <strong>Add</strong>.</p>
+<ul>
+<li>In the <strong>View name</strong> box, type <strong>Index</strong>.</li>
+<li>In the <strong>Template</strong> box, select <strong>List</strong>.</li>
+<li>In the <strong>Model class</strong> box, select <strong>Item (Todo.Models)</strong>.</li>
+<li><p>In the <strong>Use a layout page</strong> box, type <strong>~/Views/Shared/_Layout.cshtml</strong>.</p>
+<p><img class="img-responsive"src="images/adding-the-index-view.png?raw=true" alt="Adding the Index View"></p>
+<p><em>Adding the Index View</em></p>
+<p>Visual Studio will create a template view, named <em>Index.cshtml</em>. Once it is done, the cshtml file will open.</p>
+</li>
+</ul>
+</li>
+<li><p>Close the <em>Index.cshtml</em> file in Visual Studio; you will come back to it later.</p>
+</li>
+</ol>
+<p>####Adding a Create New Item View####
+You will now create a new view for creating new Items, very much like you did in the previous section for the Index view.</p>
+<ol>
+<li><p>In <strong>Solution Explorer</strong>, right-click the <strong>Item</strong> folder under the <strong>Views</strong> folder, click <strong>Add</strong>, and then click <strong>View</strong>.</p>
+</li>
+<li><p>In the <strong>Add View</strong> dialog box, complete the following options and then click <strong>Add</strong>.</p>
+<ul>
+<li>In the <strong>View name</strong> box, type <strong>Create</strong>.</li>
+<li>In the <strong>Template</strong> box, select <strong>Create</strong>.</li>
+<li>In the <strong>Model class</strong> box, select <strong>Item (Todo.Models)</strong>.</li>
+<li><p>In the <strong>Use a layout page</strong> box, type <strong>~/Views/Shared/_Layout.cshtml</strong>.</p>
+<p><img class="img-responsive"src="images/adding-the-create-view.png?raw=true" alt="Adding the Create View"></p>
+<p><em>Adding the Create View</em></p>
+</li>
+</ul>
+</li>
+</ol>
+<p>####Adding a Delete Item View####
+You will now create a new view for deleting Items.</p>
+<ol>
+<li><p>In <strong>Solution Explorer</strong>, right-click the <strong>Item</strong> folder under the <strong>Views</strong> folder, click <strong>Add</strong>, and then click <strong>View</strong>.</p>
+</li>
+<li><p>In the <strong>Add View</strong> dialog box, complete the following options and then click <strong>Add</strong>.</p>
+<ul>
+<li>In the <strong>View name</strong> box, type <strong>Delete</strong>.</li>
+<li>In the <strong>Template</strong> box, select <strong>Delete</strong>.</li>
+<li>In the <strong>Model class</strong> box, select <strong>Item (Todo.Models)</strong>.</li>
+<li><p>In the <strong>Use a layout page</strong> box, type <strong>~/Views/Shared/_Layout.cshtml</strong>.</p>
+<p><img class="img-responsive"src="images/adding-the-delete-view.png?raw=true" alt="Adding the Delete View"></p>
+<p><em>Adding the Delete View</em></p>
+</li>
+</ul>
+</li>
+</ol>
+<p>####Adding an Edit Item View####
+Now, create a new view for editing existing Items.</p>
+<ol>
+<li><p>In <strong>Solution Explorer</strong>, right-click the <strong>Item</strong> folder under the <strong>Views</strong> folder, click <strong>Add</strong>, and then click <strong>View</strong>.</p>
+</li>
+<li><p>In the <strong>Add View</strong> dialog box, complete the following options and then click <strong>Add</strong>.</p>
+<ul>
+<li>In the <strong>View name</strong> box, type <strong>Edit</strong>.</li>
+<li>In the <strong>Template</strong> box, select <strong>Edit</strong>.</li>
+<li>In the <strong>Model class</strong> box, select <strong>Item (Todo.Models)</strong>.</li>
+<li><p>Select <strong>Create as a partial view</strong>.</p>
+<p><img class="img-responsive"src="images/adding-the-edit-view.png?raw=true" alt="Adding the Edit View"></p>
+<p><em>Adding the Edit View</em></p>
+</li>
+</ul>
+</li>
+</ol>
+<p>####Adding a Details View####
+Now, create a new view for viewing details of the Items.</p>
+<ol>
+<li><p>In <strong>Solution Explorer</strong>, right-click the <strong>Item</strong> folder under the <strong>Views</strong> folder, click <strong>Add</strong>, and then click <strong>View</strong>.</p>
+</li>
+<li><p>In the <strong>Add View</strong> dialog box, complete the following options and then click <strong>Add</strong>.</p>
+<ul>
+<li>In the <strong>View name</strong> box, type <strong>Details</strong>.</li>
+<li>In the <strong>Template</strong> box, select <strong>Details</strong>.</li>
+<li>In the <strong>Model class</strong> box, select <strong>Item (Todo.Models)</strong>.</li>
+<li><p>Select <strong>Create as a partial view</strong>.</p>
+<p><img class="img-responsive"src="images/adding-the-details-view.png?raw=true" alt="Adding the Details View"></p>
+<p><em>Adding the Details View</em></p>
+</li>
+</ul>
+</li>
+</ol>
+<p>Once this is done, close all the cshtml documents in Visual Studio. You will return to these views later.</p>
+<p><a name="wiring-up-documentdb"></a></p>
+<p>##Wiring up DocumentDB</p>
+<p>In this task you will add code in the <strong>ItemController</strong> class to handle the following functionality:</p>
+<ul>
+<li><a href="#listing-incomplete-items">Listing incomplete Items</a></li>
+<li><a href="#adding-items">Adding Items</a></li>
+<li><a href="#editing-items">Editing Items</a></li>
+<li><a href="#deleting-items">Deleting Items</a></li>
+<li><a href="#details-items">Viewing Details of Items</a></li>
+</ul>
+<p><a name="listing-incomplete-items"></a></p>
+<p>####Adding code to list incomplete Items####</p>
+<ol>
+<li><p>Open the <strong>ItemController.cs</strong> file and remove all the code within the class, but make sure to keep the class. You will rebuild it piece by piece using DocumentDB in this section.</p>
+<p> The file should look like this:</p>
+<p> <img class="img-responsive"src="images/itemcontroller-class-after-removing-all-code.png?raw=true" alt="ItemController class after removing all code"></p>
+</li>
+<li><p>Add the following code snippet within the now empty <strong>ItemController</strong> class.</p>
+<pre><code class="lang-C#"> public ActionResult Index()
+ {
+     var items = DocumentDBRepository.GetIncompleteItems();
+     return this.View(items);
+ }
+</code></pre>
+<p> This code also uses a &quot;pseudo repository&quot; class called <strong>DocumentDBRepository</strong> that has yet to be created. This is a helper class that contains all the DocumentDB specific code. For the purposes of this walk-through, it is not going to be a full data access layer with dependency injection,  factories and repository patterns as it would probably be if you were building a real-world application. In this case, instead, a single class in which all the data access logic is centralized will keep things simple and allow the focus to be on the DocumentDB specific bits.</p>
+</li>
+<li><p>Right-click the <strong>Todo</strong> project and click <strong>Add</strong>. Then click <strong>Class</strong>.</p>
+<p> <img class="img-responsive"src="images/adding-a-new-class-to-the-project.png?raw=true" alt="Adding a new class to the project"></p>
+<p> <em>Adding a new class</em></p>
+</li>
+<li><p>Once the <strong>Add New Item</strong> dialog box opens, name the new class <strong>DocumentDBRepository</strong> and click <strong>Add</strong>.</p>
+<p> <img class="img-responsive"src="images/adding-the-documentdbrepository-class.png?raw=true" alt="Adding the DocumentDBRepository class"></p>
+<p> <em>Adding the DocumentDBRepository class</em></p>
+</li>
+<li><p>Replace the content of the <strong>DocumentDBRepository.cs</strong> file just created with the following:</p>
+<pre><code class="lang-C#"> namespace Todo
+ {
+      using System;
+      using System.Collections.Generic;
+      using System.Configuration;
+      using System.Linq;
+      using Microsoft.Azure.Documents;
+      using Microsoft.Azure.Documents.Client;
+      using Microsoft.Azure.Documents.Linq;
+      using Models;
+
+      public static class DocumentDBRepository
+      {
+           private static string databaseId;
+           private static string collectionId;
+           private static Database database;
+           private static DocumentCollection collection;
+           private static DocumentClient client;
+
+           private static string DatabaseId
+           {
+                 get
+                 {
+                      if (string.IsNullOrEmpty(databaseId))
+                      {
+                           databaseId = ConfigurationManager.AppSettings[&quot;database&quot;];
+                      }
+
+                      return databaseId;
+                 }
+           }
+
+           private static string CollectionId
+           {
+                 get
+                 {
+                      if (string.IsNullOrEmpty(collectionId))
+                      {
+                           collectionId = ConfigurationManager.AppSettings[&quot;collection&quot;];
+                      }
+
+                      return collectionId;
+                 }
+           }
+
+           private static Database Database
+           {
+                 get
+                 {
+                      if (database == null)
+                      {
+                           database = ReadOrCreateDatabase();
+                      }
+
+                      return database;
+                 }
+           }
+
+           private static DocumentCollection Collection
+           {
+                 get
+                 {
+                      if (collection == null)
+                      {
+                           collection = ReadOrCreateCollection(Database.SelfLink);
+                      }
+
+                      return collection;
+                 }
+           }
+
+           private static DocumentClient Client
+           {
+                 get
+                 {
+                      if (client == null)
+                      {
+                           string endpoint = ConfigurationManager.AppSettings[&quot;endpoint&quot;];
+                           string authKey = ConfigurationManager.AppSettings[&quot;authKey&quot;];
+                           Uri endpointUri = new Uri(endpoint);
+                           client = new DocumentClient(endpointUri, authKey);
+                      }
+
+                      return client;
+                 }
+           }
+      }
+ }
+</code></pre>
+<p> The references to the <em>ReadOrCreateDatabase</em> and <em>ReadOrCreateCollection</em> methods will still remain unresolved, as these methods will be added in the next step. These two method calls are used for reading or creating DocumentDB databases and document collections.</p>
+</li>
+<li><p>Add the following code to the <strong>DocumentDBRepository</strong> class:</p>
+<pre><code class="lang-C#"> private static DocumentCollection ReadOrCreateCollection(string databaseLink)
+ {
+      var col = Client.CreateDocumentCollectionQuery(databaseLink)
+                              .Where(c =&gt; c.Id == CollectionId)
+                              .AsEnumerable()
+                              .FirstOrDefault();
+
+      if (col == null)
+      {
+           col = Client.CreateDocumentCollectionAsync(databaseLink, new DocumentCollection { Id = CollectionId }).Result;
+      }
+
+      return col;
+ }
+
+ private static Database ReadOrCreateDatabase()
+ {
+      var db = Client.CreateDatabaseQuery()
+                           .Where(d =&gt; d.Id == DatabaseId)
+                           .AsEnumerable()
+                           .FirstOrDefault();
+
+      if (db == null)
+      {
+           db = Client.CreateDatabaseAsync(new Database { Id = DatabaseId }).Result;
+      }
+
+      return db;
+ }
+</code></pre>
+<p> This code takes care of setting up the database, a DocumentCollection, and creating code to connect to DocumentDB through the DocumentClient.</p>
+<p> Now you will update the configuration to set the endpoint and authorization key values, retrieving them from the DocumentDB account that you set to create in the first task of this lab.</p>
+</li>
+<li><p>Open the <strong>Web.config</strong> file in the root of your project (not the Web.config file in the Views directory) and find the <strong>appSettings</strong> section. Update it to contain the last 4 keys in the snippet below.</p>
+<pre><code class="lang-XML"> &lt;appSettings&gt;
+     &lt;add key=&quot;webpages:Version&quot; value=&quot;3.0.0.0&quot;/&gt;
+     &lt;add key=&quot;webpages:Enabled&quot; value=&quot;false&quot;/&gt;
+     &lt;add key=&quot;ClientValidationEnabled&quot; value=&quot;true&quot;/&gt;
+     &lt;add key=&quot;UnobtrusiveJavaScriptEnabled&quot; value=&quot;true&quot;/&gt;
+     &lt;add key=&quot;endpoint&quot; value=&quot;URI&quot; /&gt;
+     &lt;add key=&quot;authKey&quot; value=&quot;PRIMARY KEY&quot; /&gt;
+     &lt;add key=&quot;database&quot; value=&quot;ToDoList&quot; /&gt;
+     &lt;add key=&quot;collection&quot; value=&quot;Items&quot; /&gt;
+ &lt;/appSettings&gt;
+</code></pre>
+</li>
+</ol>
+<ol>
+<li><p>Switch to the browser instance in which you have the Azure Preview Portal open. Verify that the DocumentDB account has been created by looking for a <strong>Created DocumentDB</strong> notification in the <strong>Notifications</strong> Hub. If there is one, click it. If not, wait until the account finishes creating and the notification appears.</p>
+<p> <img class="img-responsive"src="./images/creation-succeeded-notification-hub.png?raw=true" alt="creation-succeeded-notification-hub" title="Creation succeeded in Notification Hub"></p>
+<p> <em>Creation succeeded in Notification Hub</em></p>
+</li>
+<li><p>Click on your new <strong>DocumentDB</strong> account under the resource group.</p>
+<blockquote>
+<p><strong>Note:</strong> The default consistency of the DocumentDB account will be set to Session. You can adjust the default consistency setting via the <a href="https://portal.azure.com/#gallery/Microsoft.DocumentDB">preview management portal</a>.</p>
+</blockquote>
+<p> <img class="img-responsive"src="./images/new-documentdb-account-created.png?raw=true" alt="The new DocumentDB account has been created"></p>
+<p> <em>The new DocumentDB account has been created</em></p>
+<blockquote>
+<p><strong>Note:</strong> You can also access your existing DocumentDB accounts from the <strong>Browse</strong> blade.</p>
+<p><img class="img-responsive"src="./images/accessing-the-documentdb-accounts-from-browse.png?raw=true" alt="Accessing the DocumentDB accounts from the Browse blade"></p>
+<p><em>Accessing the DocumentDB accounts from the Browse blade</em></p>
+<p><img class="img-responsive"src="./images/accessing-the-new-documentdb-account.png?raw=true" alt="Accessing the just created DocumentDB account"></p>
+<p><em>Accessing the DocumentDB account just created</em></p>
+</blockquote>
+</li>
+<li><p>Now, click the <strong>KEYS</strong> button to open the <strong>Keys</strong> blade. Copy the endpoint <strong>URI</strong> and paste the value in the <strong>Web.config</strong> file open in Visual Studio, in place of the <strong>URI</strong> placeholder.</p>
+<p> <img class="img-responsive"src="./images/copying-your-documentdb-keys.png?raw=true" alt="Retrieving the keys of the DocumentDB account just created"></p>
+<p> <em>Retrieving the keys of the DocumentDB account just created</em></p>
+</li>
+<li><p>Switch back to the browser in which the <strong>Keys</strong> blade is open and copy the <strong>PRIMARY KEY</strong> value. Switch to Visual Studio and paste it in the <strong>Web.config</strong> file, replacing the <strong>PRIMARY KEY</strong> placeholder.</p>
+<p> Now that the code for handling the database is ready, let&#39;s add some code to do the work for the views.</p>
+<p> The first thing you want to be able to do with a todo list application is to display the incomplete items. You will add a method to do that next.</p>
+</li>
+<li><p>Copy and paste the following code anywhere within the <strong>DocumentDBRepository</strong> class.</p>
+<pre><code class="lang-C#"> public static List&lt;Item&gt; GetIncompleteItems()
+ {
+      return Client.CreateDocumentQuery&lt;Item&gt;(Collection.DocumentsLink)
+                 .Where(d =&gt; !d.Completed)
+                 .AsEnumerable()
+                 .ToList&lt;Item&gt;();
+ }
+</code></pre>
+<p> At this point your solution should build without any errors.</p>
+<p> If you run the application now, you will be taken to the <strong>HomeController</strong> and the <strong>Index</strong> view of that controller. This is the default behavior for the MVC template project. You will alter this behavior by changing the routing to open the <strong>Index</strong> view of the <strong>ItemController</strong> instead, so that the Incomplete Items are listed.</p>
+</li>
+<li><p>Open the <strong>RouteConfig.cs</strong> file under <strong>App_Start</strong> and locate the line starting with <strong>defaults:</strong>. Update it to resemble the one below:</p>
+ <!-- mark:8 -->
+<pre><code class="lang-C#"> public static void RegisterRoutes(RouteCollection routes)
+ {
+     routes.IgnoreRoute(&quot;{resource}.axd/{*pathInfo}&quot;);
+
+     routes.MapRoute(
+          name: &quot;Default&quot;,
+          url: &quot;{controller}/{action}/{id}&quot;,
+          defaults: new { controller = &quot;Item&quot;, action = &quot;Index&quot;, id = UrlParameter.Optional }
+     );
+ }
+</code></pre>
+<p> This tells ASP.NET MVC that if you have not specified a value in the URL to control the routing behavior, it should use <strong>Item</strong> as the controller instead of using <strong>Home</strong> and use <strong>Index</strong> as the view. Now if you run the application, it will call your <strong>ItemController</strong> and return the results of the <strong>GetIncompleteItems</strong> method to the <strong>Item Index</strong> view.</p>
+</li>
+<li><p>Press <strong>F5</strong> to build and debug the application.</p>
+<p> The page that opens should look like this:</p>
+<p> <img class="img-responsive"src="images/application-running-locally.png?raw=true" alt="To Do App running locally"></p>
+<p> <em>To Do application running locally</em></p>
+</li>
+<li><p>Stop debugging.</p>
+</li>
+</ol>
+<p><a name="adding-items"></a></p>
+<p>####Adding Items####
+Now that you have a view to list items you will add the functionality of adding items into the database, so that you have something more than an empty grid to look at.</p>
+<p>You already have a <strong>Create</strong> view in the application and a button in the <strong>Index</strong> view that takes the user to the <strong>Create</strong> view. You will now add some code to the controller and repository to persist the record in DocumentDB.</p>
+<ol>
+<li><p>Open the <strong>ItemController.cs</strong> file and add the following code snippet, which is how ASP.NET MVC knows what to do for the <strong>Create</strong> action. In this case, it will just render the associated Create.cshtml view created earlier.</p>
+<pre><code class="lang-C#"> public ActionResult Create()
+ {
+     return this.View();
+ }
+</code></pre>
+</li>
+<li><p>Still in <strong>ItemController.cs</strong>, add the following block of code that tells ASP.NET MVC what to do with a POST form for this controller.</p>
+<pre><code class="lang-C#"> [HttpPost]
+ [ValidateAntiForgeryToken]
+ public async Task&lt;ActionResult&gt; Create([Bind(Include =  &quot;Id,Name,Description,Completed&quot;)] Item item)  
+ {
+      if (ModelState.IsValid)  
+      {  
+           await DocumentDBRepository.CreateItemAsync(item);
+           return this.RedirectToAction(&quot;Index&quot;);  
+      }
+
+      return this.View(item);
+ }
+</code></pre>
+<blockquote>
+<p><strong>Security Note:</strong> The ValidateAntiForgeryToken attribute is used here to help protect this application against cross-site request forgery attacks. There is more to it than just adding this attribute; your views need to work with this anti-forgery token as well. For more on the subject and examples of how to implement this correctly, please see <a href="http://www.asp.net/web-api/overview/security/preventing-cross-site-request-forgery-(csrf/readme.htm">Preventing Cross-Site Request Forgery</a>-attacks).</p>
+<p><strong>Security Note:</strong> We also use the Bind attribute on the method parameter to help protect against over-posting attacks. For more details please see <a href="http://www.asp.net/mvc/overview/getting-started/getting-started-with-ef-using-mvc/implementing-basic-crud-functionality-with-the-entity-framework-in-asp-net-mvc-application#overpost/readme.htm">Basic CRUD Operations in ASP.NET MVC</a>.</p>
+</blockquote>
+<p> Now that the <strong>Create</strong> method is in place, the <strong>ItemController</strong> will pass the <strong>Item</strong> object from the form to the <strong>CreateDocument</strong> method. You just need to add the <strong>CreateItemAsync</strong> method.</p>
+</li>
+<li><p>Open the <strong>DocumentDBRepository</strong> class and add the following method:</p>
+<pre><code class="lang-C#"> public static async Task&lt;Document&gt; CreateItemAsync(Item item)
+ {
+      return await Client.CreateDocumentAsync(Collection.SelfLink, item);
+ }
+</code></pre>
+<p> This method simply takes an object passed to it and persists it in DocumentDB.</p>
+</li>
+</ol>
+<p>With these steps, you have added all the code required to add new Items to the database.</p>
+<blockquote>
+<p>You may have noticed some methods or classes are not yet recognized. This will be fixed in the next section.</p>
+</blockquote>
+<p><a name="editing-items"></a></p>
+<p>####Editing items####
+Now you will add the ability to edit Items in the database and to mark them as complete. The <strong>Edit</strong> view already exists in the project, so you just need to add some code to the <strong>ItemController</strong> and to the <strong>DocumentDBRepository</strong> class again.</p>
+<ol>
+<li><p>Open <strong>ItemController.cs</strong> and add the following code:</p>
+<pre><code class="lang-C#"> [HttpPost]
+ [ValidateAntiForgeryToken]
+ public async Task&lt;ActionResult&gt; Edit([Bind(Include = &quot;Id,Name,Description,Completed&quot;)] Item item)
+ {
+      if (ModelState.IsValid)
+      {
+           await DocumentDBRepository.UpdateItemAsync(item);
+           return this.RedirectToAction(&quot;Index&quot;);
+      }
+
+      return this.View(item);
+ }
+
+ public ActionResult Edit(string id)
+ {
+      if (id == null)
+      {
+           return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+      }
+
+      Item item = (Item)DocumentDBRepository.GetItem(id);
+      if (item == null)
+      {
+           return this.HttpNotFound();
+      }
+
+      return this.View(item);
+ }
+</code></pre>
+<p> The first Edit method handles the Http GET that happens when the user clicks on the Edit link from the Index view. This method fetches a Document from DocumentDB and passes it to the Edit view. The Edit view will then do an Http POST to the IndexController.</p>
+<p> The second Edit method added handles passing the updated object to DocumentDB to be persisted in the database.</p>
+</li>
+<li><p>Add the following using directives to the <strong>ItemController.cs</strong> file.</p>
+<pre><code class="lang-C#"> using Todo.Models;
+ using System.Threading.Tasks;
+ using System.Net;
+</code></pre>
+</li>
+<li><p>Add the following methods to the <strong>DocumentDBRepository</strong> class:</p>
+<pre><code class="lang-C#"> public static Item GetItem(string id)
+ {
+     return Client.CreateDocumentQuery&lt;Item&gt;(Collection.DocumentsLink)
+                     .Where(d =&gt; d.Id == id)
+                     .AsEnumerable()
+                     .FirstOrDefault();
+ }
+
+ public static Document GetDocument(string id)
+ {
+     return Client.CreateDocumentQuery(Collection.DocumentsLink)
+                   .Where(d =&gt; d.Id == id)
+                   .AsEnumerable()
+                   .FirstOrDefault();
+ }
+
+ public static async Task&lt;Document&gt; UpdateItemAsync(Item item)
+ {
+     Document doc = GetDocument(item.Id);
+     return await Client.ReplaceDocumentAsync(doc.SelfLink, item);
+ }
+</code></pre>
+<p> The first of these methods fetches an Item from <em>DocumentDB</em> which is passed back to the <strong>ItemController</strong> and then on to the Edit view.</p>
+<p> The second method retrieves a Document in DocumentDB based on the id. This method is used by the third one (UpdateItemAsync) to replace the Document in DocumentDB with the version of the Document passed in from the <strong>ItemController</strong>.</p>
+</li>
+<li><p>Add the following using directive to the <strong>DocumentDBRepository.cs</strong> file. After this addition, all references should be resolved.</p>
+<pre><code class="lang-C#"> using System.Threading.Tasks;
+</code></pre>
+<p> With these additions, the Edit functionality should be working. Now you will add support for deleting items.</p>
+</li>
+</ol>
+<p><a name="deleting-items"></a></p>
+<p>####Deleting items####
+The code changes that allow the deletion of Items are similar to those made to allow the edition of items. As before, the <strong>Delete</strong> view already exists in the project, so you just need to add some code to the <strong>ItemController</strong> and the <strong>DocumentDBRepository</strong> class again.</p>
+<ol>
+<li><p>Open <strong>ItemController.cs</strong> and add the following code:</p>
+<pre><code class="lang-C#"> public ActionResult Delete(string id)
+ {
+      if (id == null)
+      {
+           return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+      }
+
+      Item item = (Item)DocumentDBRepository.GetItem(id);
+      if (item == null)
+      {
+           return this.HttpNotFound();
+      }
+
+      return this.View(item);
+ }
+
+ [HttpPost, ActionName(&quot;Delete&quot;)]
+ //// To protect against Cross-Site Request Forgery, validate that the anti-forgery token was received and is valid
+ //// for more details on preventing see http://go.microsoft.com/fwlink/?LinkID=517254
+ [ValidateAntiForgeryToken]
+ //// To protect from overposting attacks, please enable the specific properties you want to bind to, for
+ //// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+ public async Task&lt;ActionResult&gt; DeleteConfirmed([Bind(Include = &quot;Id&quot;)] string id)
+ {
+      await DocumentDBRepository.DeleteItemAsync(id);
+      return this.RedirectToAction(&quot;Index&quot;);
+ }
+</code></pre>
+</li>
+<li><p>Add the following methods to the <strong>DocumentDBRepository</strong> class:</p>
+<pre><code class="lang-C#"> public static async Task DeleteItemAsync(string id)
+ {
+     Document doc = GetDocument(id);
+     await Client.DeleteDocumentAsync(doc.SelfLink);
+ }
+</code></pre>
+</li>
+</ol>
+<p><a name="details-items"></a></p>
+<p>####Viewing details of items####
+The code changes that allow viewing details of Items are even fewer than those made to allow the edition or deletion of items. The <strong>Details</strong> view was already added to the project, and the necessary code in the <strong>DocumentDBRepository</strong> class to get a document already exists, so you only need to add some code to the <strong>ItemController</strong>.</p>
+<ol>
+<li><p>Open <strong>ItemController.cs</strong> and add the following code:</p>
+<pre><code class="lang-C#">public ActionResult Details(string id)
+{
+     var item = DocumentDBRepository.GetItem(id);
+     return this.View(item);
+}
+</code></pre>
+</li>
+</ol>
+<p>You have finished adding all the necessary code for the application to work. In the next section you will test the application locally.</p>
+<p><a name="running-the-application-locally"></a></p>
+<p>##Running the application locally</p>
+<p>In this task you will verify that the application you built in the previous task is working as expected.</p>
+<ol>
+<li><p>Press <strong>F5</strong> to build and run the solution.</p>
+<p> The application will be launched in a browser.</p>
+<p> <img class="img-responsive"src="images/application-running-locally.png?raw=true" alt="Application running locally"></p>
+<p> <em>Application running locally</em></p>
+</li>
+<li><p>Click the <strong>Create new</strong> link and add values to the Name and Description fields. Leave the Completed check box unselected; otherwise, the new Item will be added in a completed state and will not appear on the initial list.</p>
+<p> <img class="img-responsive"src="images/testing-creating-an-item.png?raw=true" alt="Testing creating an item"></p>
+<p> <em>Testing - Creating an item</em></p>
+</li>
+<li><p>Click <strong>Create</strong>. You are redirected back to the <strong>Index</strong> view and your Item appears in the list.</p>
+<p> <img class="img-responsive"src="images/testing-the-app-after-creating-an-item.png?raw=true" alt="testing the app after creating an item"></p>
+<p> <em>Testing - the Index view after creating an item</em></p>
+<p> Feel free to add a few more Items to your todo list.</p>
+</li>
+<li><p>Click <strong>Edit</strong> next to an Item on the list. You are taken to the Edit view where you can update any property of your object, including the <strong>Completed</strong> flag. Update any field and click <strong>Save</strong>.</p>
+<blockquote>
+<p><strong>Note:</strong> (Warning) If you mark the <strong>Completed</strong> flag and click <strong>Save</strong>, the Item will no longer appear in the list of incomplete tasks. Please do not do this just yet.</p>
+</blockquote>
+<p> <img class="img-responsive"src="images/testing-editing-an-item.png?raw=true" alt="Testing editing an item"></p>
+<p> <em>Testing - Editing an item</em></p>
+</li>
+<li><p>Back in the Index view, click <strong>Details</strong>. You will be taken to the Details view where all fields for the item are visible.</p>
+<p> <img class="img-responsive"src="images/testing-view-details-for-an-item.png?raw=true" alt="Testing view details for an item"></p>
+<p> <em>Testing - Viewing details for an item</em></p>
+</li>
+<li><p>Click <strong>Back to List</strong> and once in the Index view, click <strong>Delete</strong>. The app will navigate to the <strong>Delete</strong> view where you can confirm the deletion.</p>
+<p> <img class="img-responsive"src="images/testing-deleting-an-item.png?raw=true" alt="Testing deleting an item"></p>
+<p> <em>Testing - Deleting an item</em></p>
+</li>
+<li><p>Click <strong>Delete</strong>. You will be taken to the Index view, where you will see that the item no longer exists.</p>
+<p> You can verify that completed items are not displayed in the <strong>Index</strong> view by creating a new item and editing it to check the <strong>Completed</strong> checkbox. Once you click <strong>Save</strong> and are redirected to the Index view, the item should no longer appear.</p>
+</li>
+<li><p>Go back to Visual Studio and press <strong>Shift+F5</strong> to stop debugging.</p>
+</li>
+</ol>
+<p><a name="deploying-the-app-to-azure"></a></p>
+<h2 id="deploying-the-application-to-azure-web-apps">Deploying the application to Azure Web Apps</h2>
+<p>The following steps will show you how to deploy the application to Azure as an Azure Web App. In the earlier steps, you connected your new project with an Azure Web App, so it&#39;s ready to be published.</p>
+<ol>
+<li><p>In <strong>Visual Studio</strong>, right-click the <strong>Todo</strong> project and select <strong>Publish</strong>.</p>
+<p> <img class="img-responsive"src="images/publish-web-application.png?raw=true" alt="Publishing the application"></p>
+<p> <em>Publishing the application</em></p>
+<p> The <strong>Publish Web</strong> dialog box will appear with each setting already configured according to your credentials. In fact, the website has already been created in Azure for you at the Destination URL shown.</p>
+<blockquote>
+<p><strong>Note:</strong> If you opened the end solution provided instead of following the lab instructions, you might have to enter additional information.</p>
+</blockquote>
+</li>
+<li><p>Click <strong>Publish</strong>.</p>
+<p> <img class="img-responsive"src="images/publish-web-dialog.png?raw=true" alt="Publish Web Dialog box"></p>
+<p> <em>Publish Web Dialog box</em></p>
+<p> Once Visual Studio publishes the web application, it will launch a browser with the web application running. You can use it to perform the same operations you tried while running it locally.</p>
+<p> <img class="img-responsive"src="images/application-running-in-ie-from-azure.png?raw=true" alt="Application running in IE from Azure"></p>
+<p> <em>Application running in IE from Azure</em></p>
+</li>
+</ol>
+<!--
+1. Click on the **Next** button to go to the **Settings** page. You may be prompted to authenticate; make sure you authenticate using your Azure subscription account (typically a Microsoft account) and not the organizational account you created earlier.
+
+    ![Publish Web dialog - Connection tab](./images/publish-web-dialog-connection-tab.png)
+
+    _Publish Web dialog - Connection tab_
+-->
+<p><a name="cleanup"></a></p>
+<p>##Appendix - Cleanup</p>
+<p>In this task you will learn how to delete the resources created created in the previous sections. These are:</p>
+<ul>
+<li>a website</li>
+<li>a DocumentDB account</li>
+</ul>
+<p>To delete the website follow these steps:</p>
+<ol>
+<li><p>In your browser, go to <a href="https://portal.azure.com/readme.htm">the preview management portal</a>, and sign in with your Azure credentials.</p>
+</li>
+<li><p>Click <strong>BROWSE</strong> in the Navigation hub on the left and then <strong>Web Apps</strong>.</p>
+<p> <img class="img-responsive"src="images/browse-websites.png?raw=true" alt="Browse websites"></p>
+<p> <em>Browsing websites</em></p>
+<p> A blade displaying all websites will be displayed.</p>
+</li>
+<li><p>Select your website and click <strong>DELETE</strong> in the details blade.</p>
+<p> <img class="img-responsive"src="images/clicking-delete-website.png?raw=true" alt="Clicking Delete website"></p>
+<p> <em>Clicking Delete to delete website</em></p>
+</li>
+<li><p>In the <strong>Delete Confirmation</strong> dialog, click <strong>Yes</strong>.</p>
+<p> The website will be deleted. You will see a notification in the <strong>Notifications</strong> hub.</p>
+</li>
+</ol>
+<p>To delete the DocumentDB account proceed in a similar way:</p>
+<ol>
+<li><p>Click <strong>BROWSE</strong> in the Navigation hub on the left and then <strong>DocumentDB accounts</strong>.</p>
+</li>
+<li><p>Click your documentDB account and in the details blade that opens, click <strong>Delete</strong>.</p>
+<p> <img class="img-responsive"src="./images/accessing-the-new-documentdb-account.png?raw=true" alt="Accessing the just created DocumentDB account"></p>
+<p> <em>Accessing the DocumentDB account just created</em></p>
+</li>
+<li><p>In the confirmation blade that appears, type your documentDB account name and click <strong>Delete</strong>. The account will be deleted.</p>
+<p> <img class="img-responsive"src="images/confirm-deletion-of-documentdb-account.png?raw=true" alt="Confirming deletion of DocumentDB account"></p>
+<p> <em>Confirming deletion of DocumentDB account</em></p>
+</li>
+</ol>
+<p>##Summary</p>
+<p>By completing this lab you have learned how to create an ASP.Net MVC application that uses Azure DocumentDB to store data as JSON objects. You have implemented all basic CRUD operations, tested the application locally, and published it to Azure Websites.</p>
+
+      </div>
+  </body>
+</html>

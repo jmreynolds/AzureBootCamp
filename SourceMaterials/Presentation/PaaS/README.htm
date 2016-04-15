@@ -1,0 +1,56 @@
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>AzureReadiness: DevCamp</title>
+	  <link rel="stylesheet" href="../../style.css">
+   </head>
+   <body>
+      <div class="container">
+        <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="../../README.htm">Home</a>
+            </div>
+        </header>
+        <div class="jumbotron"><h1 id="paas">PaaS</h1></div>
+<h2 id="demo-1-deploying-a-website-to-azure">Demo 1 - Deploying a Website to Azure</h2>
+<p>Prerequisites:</p>
+<ul>
+<li>An active Azure subscription.</li>
+<li>The firework application (Cache-Redis-Firework-SignalR) has been loaded in Visual Studio. Compiled and verified to work locally.</li>
+<li>Create a CloudService with a Web- and a WorkerRole and deploy it to a new CloudService in Azure.</li>
+</ul>
+<p>Steps:</p>
+<ol>
+<li>Open Ibiza portal and click the <strong>NEW</strong> button at the lower-left corner.</li>
+<li>Select <strong>Website</strong> and provision a new website.</li>
+<li>Click on Browse to show that the Website slot is live and can receive traffic. Nothing is deployed yet.</li>
+<li>Run the firework application locally. Explain this is a regular ASP.Net application (your application code) that you want to deploy to Azure.</li>
+<li>In <strong>Solution Explorer</strong>, right-click the web project and select <strong>Publish</strong>.</li>
+<li>Follow the publish wizard to publish the application to the website we just provisioned.</li>
+<li>Test the application. Invite audience to participate if possible.</li>
+<li>Switch back to slide to explain what just happened.</li>
+</ol>
+<h2 id="demo-2-azure-resource-manager">Demo 2 - Azure Resource Manager</h2>
+<p>This is a quick demo of Azure Resource Manager demo.</p>
+<ol>
+<li>Go to <a href="http://portal.azure.com">http://portal.azure.com</a>.</li>
+<li>Create an Azure Resource Group.</li>
+<li>Provision a Web App in the Resource Group.</li>
+<li>Provision an Azure SQL Database in the Resource Group.</li>
+<li>Open Resource Group container blade. Show the Web App and database resources are contained within the Resource Group.</li>
+<li>Review <strong>Monitoring</strong> for Web App and database events from an application lifecycle container perspective.</li>
+<li>(Optional) Review <strong>Billing</strong> to measure total and itemized costs for the resources contained in the Resource Group.</li>
+<li>Delete the Azure Resource Group. Show the Web App and database no longer exist since the container is now gone.</li>
+</ol>
+<h2 id="demo-3-hello-world">Demo 3 - Hello World</h2>
+<ol>
+<li>Create a Cloud Service with a Web Role and Worker Role1. Launch, explain local emulator.</li>
+<li>Show publish menu and start the publish. Explain that this takes a few minutes and therefor you have already prepared this step earlier.</li>
+<li>Show the current management portal <a href="http://manage.windowsazure.com">http://manage.windowsazure.com</a> with the CloudService deployed in &quot;Prerequisites&quot;. Show the instances and also browse to the web application deployed.</li>
+</ol>
+
+      </div>
+  </body>
+</html>

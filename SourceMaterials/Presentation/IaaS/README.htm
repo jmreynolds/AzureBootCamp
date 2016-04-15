@@ -1,0 +1,185 @@
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>AzureReadiness: DevCamp</title>
+	  <link rel="stylesheet" href="../../style.css">
+   </head>
+   <body>
+      <div class="container">
+        <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="../../README.htm">Home</a>
+            </div>
+        </header>
+        <div class="jumbotron"><h1 id="iaas-demos">IaaS Demos</h1></div>
+<h2 id="demo-1-provisioning-a-vm">Demo 1 - Provisioning a VM</h2>
+<ol>
+<li>Open Azure portal and click the <strong>NEW</strong> button at the upper-left corner.</li>
+<li>Click on <strong>See All</strong> in New section. Select <strong>Compute</strong> in Marketplace. Navigate to Recommended resources in Compute section.</li>
+<li>open the <strong>Windows Server</strong> category.</li>
+<li>Scroll down the view and show images of different types.</li>
+<li>Click on <strong>Windows Server 2012 R2 Datacenter</strong>, and select deplpoyment model as <strong>Resource Manager</strong> then click the <strong>Create</strong> button in the overview blade. For non-Microsoft focused audience, consider searching any Linux image in the search box instead.</li>
+<li>Fill in the <strong>Basics</strong>, <strong>Size</strong>, <strong>Settings</strong> form and click on the <strong>OK</strong> button in the <strong>Summary</strong> section to provision the VM. Explain this will take a few minutes.</li>
+<li>Open the already provisioned VM.</li>
+<li>Scroll down the blade to show various of information available on the blade.</li>
+<li>Click on the <strong>Extensions</strong> tile. </li>
+<li>On the Extensions blade, click on the <strong>ADD</strong> icon to bring up the extension list. Introduce that VM extensions are installable components to customize VM instances. </li>
+<li>Switch to slides to continue with VM extension introduction.</li>
+</ol>
+<h2 id="demo-2-vm-extension">Demo 2 - VM Extension</h2>
+<ol>
+<li>In Azure PowerShell, issue command: <strong>Get-AzureVMAvailableExtension | Format-Table -Property ExtensionName, Publisher</strong></li>
+<li>The above cmdlet lists existing extensions. Next we’ll see how we can inject an extension to a running VM instance. In the last demo you’ve seen that you can achieve this using Azure Management Portal. Here we’ll do it using PowerShell. In this case, we’ll install Custom Script Extension to an existing Windows Server 2012 VM.</li>
+<li>Issue the following cmdlets to get a reference to the virtual machine instance:
+<strong>$serviceName = “[cloud service that hosts the VM]”</strong>
+<strong>$vmName = “[name of the VM]”</strong>
+<strong>$vm = Get-AzureVM -ServiceName $serviceName -Name $vmName</strong></li>
+<li>Next, issue command <strong>Get-AzureVMExtension -VM $vm</strong>. This lists VM extensions that are currently installed on the VM.</li>
+<li>Use the following cmdlet to enable Custom Script Extension, and instruct it to download and execute the helloworld.ps1 (this takes about 20-30 seconds):
+<strong>Set-AzureVMCustomScriptExtension -ContainerName scripts -StorageAccountName &#39;[your storage account name]&#39; -VM $vm -FileName ‘helloworld.ps1&#39; -Run ‘helloworld.ps1&#39; | Update-AzureVM -Verbose</strong></li>
+<li>Next, we’ll retrieve and display the script execution result:
+<strong>$status = Get-AzureVM -ServiceName $serviceName -Name $vmName</strong>
+<strong>$result = $status.ResourceExtensionStatusList.ExtensionSettingStatus.SubStatusList | Select Name, @{&quot;Label&quot;=&quot;Message&quot;;Expression = {$_.FormattedMessage.Message }}</strong> 
+<strong>$result |fl</strong>
+(see screenshots in hidden slides for references)</li>
+</ol>
+<p>(<a href="http://azure.microsoft.com/blog/2014/07/15/automating-sql-server-vm-configuration-using-custom-script-extension/readme.htm">see this blog post</a> for more details on Custom Script Extension)</p>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li>Azure PowerShell v0.8 or higher has been installed and configured.</li>
+<li>Desired Azure subscription has already been selected. </li>
+<li>A storage account has been provisioned under the same Azure subscription.</li>
+<li>A <strong>scripts</strong> container has been created under the storage account with public read access.</li>
+<li>A <strong>helloworld.ps1</strong> PowerShell script has been uploaded to the container. The content of the script is a single line: <strong>write-output “Hello World!”</strong></li>
+<li>PowerShell environment has been set with large font for easy reading.</li>
+<li>A Windows Server 2012 VM has been provisioned.</li>
+</ul>
+<h2 id="demo-3-creating-virtual-machines-with-iis-and-sql-vm-using-arm-templates">Demo 3 - Creating Virtual Machines with IIS and SQL VM using ARM Templates</h2>
+<p>In this demo you will learn how to create a virtual machine using ARM Templates. </p>
+<p>###Resources and Architecture Diagram:</p>
+<p>The following resources are created by this template:</p>
+<ul>
+<li>1 or 2 Windows 2012R2 IIS Web Servers.</li>
+<li>1 SQL Server 2014 running on premium or standard storage.</li>
+<li>1 virtual network with 2 subnets with NSG rules.</li>
+<li>1 storage account for the VHD files.</li>
+<li>1 Availability Set for IIS servers.</li>
+<li><p>1 Load balancer with NATing rules.</p>
+<p>  <img class="img-responsive"src="images/create-architecture-diagram-vm.png?raw=true" alt="Virtual Machines view in portal"></p>
+<p>  <em>Architecture diagram for ARM Template</em></p>
+</li>
+</ul>
+<p>The below <strong>Deploy to Azure</strong> button embeds an Azure ARM template which creates one or two Windows Server 2012R2 VM(s) with IIS configured using DSC. It also installs one SQL Server 2014 standard edition VM, a VNET with two subnets, NSG, loader balancer, NATing and probing rules.</p>
+<p><a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fazure%2Fazure-quickstart-templates%2Fmaster%2Fiis-2vm-sql-1vm%2Fazuredeploy.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png" /></a></p>
+<p>In order to create virtual machine using ARM, perform the following steps:</p>
+<ol>
+<li><p>Click on the <strong>Deploy to Azure</strong> button which will navigate you to Azure Portal with Custom Deployment.</p>
+<p> <img class="img-responsive"src="images/create-vm-arm-parameters.png?raw=true" alt="Custom deployment and its Parameters"></p>
+<p> <em>Custom Deployment using Azure ARM - using Deploy to Azure button</em></p>
+</li>
+<li><p>On the Custom Deployment blade that opens, enter the parameters:</p>
+<ul>
+<li><strong>ENVPREFIXNAME</strong>: virtual machine name (e.g. azureVM)</li>
+<li><strong>Location</strong>: location for the virtual machine (e.g. West US)</li>
+<li><strong>User Name</strong>: user name for the administrator account (e.g. adminUser)</li>
+<li><strong>Password</strong>: unique password for the administrator account</li>
+<li><strong>WEBSRVVMSIZE</strong>: unique password for the administrator account (e.g. Standard_DS1)</li>
+<li><strong>NUMBEROFWEBSRVS</strong>: unique password for the administrator account (e.g. 1)</li>
+<li><strong>SQLVMSIZE</strong>: unique password for the administrator account (e.g. Standard_DS1)</li>
+<li><strong>STORAGEACCOUNTTYPE</strong>: unique password for the administrator account (e.g. Standard_LRS)</li>
+</ul>
+</li>
+<li><p>Review the default settings, such as the <strong>Subscription</strong>(if you have multiple), <strong>Resource Group</strong>(create or select an existing group), and <strong>Resource Group Location</strong> and finally <strong>Legal Temrs</strong>, then Click <strong>Create</strong> which will add the resource group on to dashboard.</p>
+<p> <img class="img-responsive"src="images/create-vm-arm-dashboard.png?raw=true" alt="Creating a VM using ARM Dashboard"></p>
+<p> <em>Creating the architecture using ARM Template</em></p>
+</li>
+<li><p>In the meanwhile, you can click on <strong>Deploying Template deployment</strong> which was created on the dashboard.</p>
+<p> <img class="img-responsive"src="images/deploying-template-deployment-status.png?raw=true" alt="Status while deploying custom deployment template"></p>
+<p> <em>Azure ARM Template deployment Status</em></p>
+</li>
+<li><p>Once the Template Deployment succeeds, you will have WebServer with IIS Installed and SQL Server 2014 Standard deployed on a Virtual Netowrk with 2 subnets with NSG rules and a Load Balancer with NATing rules. Click on the Resource Group Tile pinned on the dashboard and then click on each resource for more details.</p>
+<p> <img class="img-responsive"src="images/succeeded-arm-template.png?raw=true" alt="Resource Group with all resources"></p>
+<p> <em>Azure ARM Template deployment Succeeds</em></p>
+</li>
+<li><p>Now, the 2-tier architecture is created with all necessary resources, to check whether all the rules are applied we will deploy an ASP.NET application and a Sample Database(AdventureWorks2012).</p>
+<ul>
+<li><p>Click on <strong>dbNsg</strong> which is a Netowork security group and delete the outbound Security rules (Prioirity - 200) - We do this step to download the below AdventureWorks2012 database.</p>
+</li>
+<li><p>Download RDPs for both Database server and Application server and login with the credentails and download the ASP.NET application content into appserver and AdventureWorks2012 database into Database server.</p>
+</li>
+<li><p>A sample ASP.NET Application content can be downloaded here : <a href="http://opsgilitytraining.blob.core.windows.net/armhackathon/cloudshop.zip">application content</a></p>
+</li>
+<li><p>Sample Database can be downloaded here : [AdventureWorks2012] (<a href="http://opsgilitytraining.blob.core.windows.net/public/AdventureWorks2012.bak">http://opsgilitytraining.blob.core.windows.net/public/AdventureWorks2012.bak</a>)</p>
+</li>
+<li><p>Once you download application content onto app server extract the .zip file and copy the content and past in C:\inetpub\wwwroot.</p>
+<p>  <img class="img-responsive"src="images/inetpub.png?raw=true" alt="Copied content into inetpub"></p>
+<p>  <em>Copy content in wwwroot</em></p>
+</li>
+<li><p>Open Database Server, and Open SQL Server Management Studio 2014 login with Windows Authentication for restoring the AdventureWorks2012 database.</p>
+</li>
+<li><p>Copy the .bak file to the Backup location &quot;C:\Program Files\Microsoft SQL Server\MSSQL12.MSSQLSERVER\MSSQL\Backup&quot; and click <strong>OK</strong>.</p>
+<p>  <img class="img-responsive"src="images/backup-database.png?raw=true" alt="Restoring Backup database file"></p>
+<p>  <em>Restoring Backup database file</em></p>
+</li>
+<li><p>In object explorer go to Security section and Login subsection Right Click and New Login and create a user with SQL Server authentication and in the default database select as <strong>AdventureWorks2012</strong></p>
+<p>  <img class="img-responsive"src="images/login-user.png?raw=true" alt="Create a Login user"></p>
+<p>  <em>Create a login user</em></p>
+</li>
+<li><p>On Left side you have <strong>Server Roles</strong> -&gt; Select <strong>public</strong> and <strong>sysadmin</strong> and check in <strong>User Mapping</strong> whether <strong>public</strong> is selected or not and click <strong>OK</strong></p>
+</li>
+<li><p>So till now we have an application content in appserver and database in Database Server. Fianlly we have to setup the NSG Outbound rule which we have deleted earlier to Database Server through portal.</p>
+</li>
+<li><p>In Azure Portal Click on the resource group which we just created and in the resources click on <strong>dbNsg</strong> and click on <strong>All Settings</strong> and Outbound security rules and click on add and fill the details as below:</p>
+<p>  <img class="img-responsive"src="images/addnsgrule-outbound.png?raw=true" alt="Adding a Outbound NSG rule"></p>
+<p>  <em>Adding a Outbound NSG rule</em></p>
+</li>
+<li><p>And Finally login into AppServer and open inetpub\wwwroot and Open <strong>Web.Config</strong> in notepad and replace the <strong>ConnectionString</strong> with the below code:</p>
+<p><code>&lt;add name=&quot;DefaultConnection&quot;
+connectionString=&quot;Data Source=tcp:{Destination-Internal-IP},1433;Initial Catalog=AdventureWorks2012;User ID={User-created-DbServer};Password={password};Encrypt=true;Trusted_Connection=false;TrustServerCertificate=true&quot; providerName=&quot;System.Data.SqlClient&quot;/&gt;    
+&lt;add name=&quot;AdventureWorksEntities&quot; connectionString=&quot;metadata=res://*/Models.AdventureWorks.csdl|res://*/Models.AdventureWorks.ssdl|res://*/Models.AdventureWorks.msl;provider=System.Data.SqlClient;provider connection string=&amp;quot;data source=tcp:{Destination-Internal-IP},1433;initial catalog=AdventureWorks2012;Uid={User-created-DbServer};Password={password};multipleactiveresultsets=True;App=EntityFramework&amp;quot;&quot; providerName=&quot;System.Data.EntityClient&quot; /&gt;</code></p>
+<blockquote>
+<p>NOTE: Before replacing the connection string, do change the following text with respective values</p>
+</blockquote>
+<p>  1) Destination IP address : {Destination-Internal-IP} -&gt; Destination IP
+  2) User ID: {User-created-DbServer} -&gt; User ID for SQL Authentication
+  3) Password: {password} -&gt; Password for SQL Authentication</p>
+</li>
+<li><p>Now you can verify by copying the Loadbalancer IP address onto browser and you will see an asp.net application with data populating from the DB Server.</p>
+<p>  <img class="img-responsive"src="images/output-demo.png?raw=true" alt="Adding a Outbound NSG rule"></p>
+<p>  <em>Output of the application</em></p>
+</li>
+</ul>
+</li>
+</ol>
+<p><a name="cleanup"></a></p>
+<p>##Appendix - Cleanup</p>
+<p>In this demo you will learn how to delete the virtual machines created in the previous sections, along with the related data disks created. </p>
+<h3 id="remove-vm-using-azure-portal">Remove VM using Azure Portal</h3>
+<ol>
+<li><p>Scroll to the bottom on the left pane and Click <strong>Browse &gt;</strong>. Then either search in the search box at the top or scroll down and find <strong>Virtual machines (Classic)</strong>.</p>
+<p> <img class="img-responsive"src="images/clicking-browse-virtualmachine.png?raw=true" alt="Clicking Browse in the left pane and search in the box"></p>
+<p> <em>Clicking Browse in the left Menu</em></p>
+</li>
+<li><p>A page listing all Virtual Machines will be displayed. </p>
+<p> <img class="img-responsive"src="images/virtual-machines-view-in-portal.png?raw=true" alt="Virtual Machines view in portal"></p>
+<p> <em>Viewing all virtual machines created</em></p>
+</li>
+<li><p>Click the <strong>...</strong> menu to find the virtual machine to delete and in the context menu that opens, click <strong>Delete</strong>.</p>
+<p> <img class="img-responsive"src="images/deleting-a-virtual-machine.png?raw=true" alt="Deleting a virtual machine"></p>
+<p> <em>Deleting a virtual machine</em></p>
+</li>
+<li><p>In the <strong>Confirmation</strong> blade that opens, type the virtual machine name, select all other items to delete like disks and domain names, and click the <strong>Delete</strong> button.</p>
+<p> <img class="img-responsive"src="images/confirming-the-deletion-of-virtual-machine.png?raw=true" alt="Confirming the deletion of virtual machine"></p>
+<p> <em>Confirming the deletion of the virtual machine</em></p>
+</li>
+</ol>
+<p>The virtual machine as well as other items selected in the previous step will be deleted. You can monitor the progress of this operation from the <strong>Notifications</strong> Hub.</p>
+<p>Once complete, the <strong>Virtual Machines</strong> list will refresh and the virtual machine recently deleted will no longer appear. Follow the same instructions to delete all other virtual machines created in this lab.</p>
+<p>##Summary</p>
+<p>By completing this lab you have learned how to create virtual machines using several different methods: the Azure Portal interface, the Cross-Platform Command Line Tools, PowerShell and Automation Runbook. Additionally, you have seen how to attach an empty datadisk to the virtual machine, how to generate a Remote Desktop Protocol file to connect to the machine, and how to install extensions.</p>
+
+      </div>
+  </body>
+</html>

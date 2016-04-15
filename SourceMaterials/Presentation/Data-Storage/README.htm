@@ -1,0 +1,137 @@
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>AzureReadiness: DevCamp</title>
+	  <link rel="stylesheet" href="../../style.css">
+   </head>
+   <body>
+      <div class="container">
+        <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="../../README.htm">Home</a>
+            </div>
+        </header>
+        <div class="jumbotron"><h1 id="microsoft-azure-storage-demos">Microsoft Azure Storage Demos</h1></div>
+<p><a name="Overview"></a></p>
+<h2 id="overview">Overview</h2>
+<p>This is a set of demos showing how to interact with <a href="http://azure.microsoft.com/en-us/documentation/services/storage/readme.htm">Microsft Azure Storage</a> using tools, http and C# code.</p>
+<p><a id="goals" /></p>
+<h3 id="goals">Goals</h3>
+<p>In these demos, you will see how to:</p>
+<ol>
+<li>Use a tool to interact with Azure Storage.</li>
+<li>Leverage the <a href="https://www.nuget.org/packages/WindowsAzure.Storage">C# Azure Storage library</a> to interact with Azure storage in code.</li>
+</ol>
+<p><a name="setup"></a></p>
+<h3 id="setup-and-configuration">Setup and Configuration</h3>
+<p>Follow these steps to setup your environment for the demo.</p>
+<ol>
+<li>Sign into <a href="http://portal.azure.com">Microsoft Azure Portal</a> and create a demo Storage account.</li>
+<li>Rename the template configuration file &#39;SharedConfiguration.original.config&#39; -&gt; SharedConfiguration.config and configure the &quot;Azure Storage Account Demo Primary&quot; connection string with they account name and key from your new storage account.</li>
+<li>Open the demo solution &quot;Demos\Data-Storage-Demos.sln&quot;&quot; in Visual Studio and review the code demos. They are structured in once Unit Test class per demo. The general idea is that you walk through the code in your demo and also execute the unit tests from top to bottom in the classes!</li>
+<li>Also go through the steps on the tooling and interaction demos below!
+5) Download a third party Storage Explorer tool of your choice from this list: <a href="http://blogs.msdn.com/b/windowsazurestorage/archive/2014/03/11/windows-azure-storage-explorers-2014.aspx">Azure Storage Explorers</a>
+6) Connect to your Azure Storage demo account using the third party tool.</li>
+</ol>
+<p><a name="Demo1"></a></p>
+<h2 id="demo-1-interact-with-azure-storage-blobs">Demo 1) Interact with Azure Storage Blobs</h2>
+<ol>
+<li>Using the <a href="http://storageexplorer.com/readme.htm">Azure Storage Explorer</a> tool create a container in your Azure Storage account.</li>
+<li>Upload a file for instance an image. (It can be any image you feel like sharing.)</li>
+<li>Copy the URL to the file and browse to it. It does not work.</li>
+<li>Change the container access permissions to allow public read access (at the container level or at the blob level).5) Try browsing to the blob again. It works.</li>
+<li>Upload a small video file, copy the URL to it and open it in Media Player. Streaming of the blob should happen. (Azure Storage supports smooth streaming.)</li>
+<li>Using this storage explorer tool, you can as well demonstrate how easy it is to copy blobs between two different storage accounts. It involved multiple steps in the PowerShell world.</li>
+</ol>
+<blockquote>
+<p><strong>Speaking point:</strong> Explain that interacting with Storage Blobs is really easy using a tool. Any tool that can make a call over http can access your files in Azure Storage. There is also a CDN (Content Delivery Network) Service which can be enabled for Azure Storage which effectively caches your files in edge nodes closer to the downloading users around the globe. 
+Note: Azure Storage Explorer is a tool released by Microsoft and is currently under version 0.7.</p>
+</blockquote>
+<p><a name="Demo2"></a></p>
+<h2 id="demo-2-interact-with-azure-storage-blobs-through-code">Demo 2) Interact with Azure Storage Blobs through code</h2>
+<ul>
+<li>In the Demo solution open the class BlobDemoTests. It contains Unit Tests which are supposed to be executed sequentially while showing the code. You can even choose to debug the tests and step through them wile explaining to the audience.</li>
+<li>Execute the unit tests in the order top to bottom: <ul>
+<li><strong>.UploadBlob()</strong> - connects with Storage, creates a container and uploads a text into a blob in the container.</li>
+<li><strong>.DownloadBlob()</strong> - connects with storage and downloads the same blob.</li>
+<li><strong>.DeleteBlob()</strong> - connects with storage and deletes the blob.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Tip:</strong> You can also show the blob in a storage explorer as it is created!</p>
+<p><a name="Demo3"></a></p>
+<h2 id="demo-3-blob-metadata">Demo 3) Blob metadata</h2>
+<p>This test class has four methods. The first two will upload a blob with metadata and download it again. The second two do the same only the metadata contains invalid characters which means we have to base64 encode the metadata value before uploading it.</p>
+<ul>
+<li><strong>.UploadBlob()</strong> - Upload a blob including some metadata.<ul>
+<li><strong>Tip:</strong> Look at the blob metadata in your Storage Explorer.</li>
+</ul>
+</li>
+<li><strong>. DownloadBlobMetadata()</strong> - Download the metadata again.</li>
+<li><strong>.UploadBlob_EncodedMetadata()</strong> - Because this other metadata has invalid characters it has to be stored as base64 encoded data.<ul>
+<li><strong>Tip:</strong> Look at the blob metadata in your Storage Explorer. The challenge here becomes that the metadata is not human readable in an easy way. Still the metadata is storable so there is a trade off.</li>
+</ul>
+</li>
+<li><strong>.DownloadBlob_EncodedMetadata()</strong> - Download and decode the metadata from the upload above.</li>
+</ul>
+<blockquote>
+<p><strong>Speaking Point:</strong> The metadata is not searchable using the API. The total size of the metadata, including both the name and value together, may not exceed 8 KB in size.</p>
+</blockquote>
+<p><a name="Demo4"></a></p>
+<h2 id="demo-4-shared-access-signatures-sas-">Demo 4) Shared Access Signatures (SAS)</h2>
+<p>The class SharedAccessSignaturesDemoTests contains two methods that demo SAS access to Azure Storage.</p>
+<ul>
+<li><strong>.UploadBlob_using_one_time_SAS()</strong> - Creates a custom Shared Access Signature to a specific blob with write only access. Uses it to upload a blob.</li>
+<li><strong>.DownloadBlob_using_SharedAccessPolicies()</strong> - Creates a Shared Access Policy for reading blobs in a container and uploads it to Azure Storage. Using this policy a SAS key is created and is used to download the blob. The policy is then expired and the URL is not usable. After the policy is prolonged the same URL can again access the blob.<ul>
+<li><strong>Tip:</strong> Look at the blob metadata in your Storage Explorer.</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><strong>Speaking Point:</strong> An ordinary SAS key can be used for a specific blob target with specific access rights and time. A Stored Access Policy is persisted in an Azure Storage container and can be revoked on the server side. Two complimentary and great features that provides flexible and fine grained access to 
+Azure Storage.</p>
+</blockquote>
+<p><a name="Demo5"></a></p>
+<h2 id="demo-5-queues-in-code">Demo 5) Queues in Code</h2>
+<p>In this demo a queue message will be sent to a queue, it will be updated and then collected from the queue.</p>
+<ul>
+<li><strong>.SendMessageToQueue()</strong> - This method sends a simple message to an Azure Queue.<ul>
+<li><strong>Tip:</strong> You can peek into the queue and see the message using a Storage Explorer tool.</li>
+</ul>
+</li>
+<li><strong>.ModifyMessageInQueue()</strong> - This method gets a message from a queue, modifies the message and updates back into the queue.<ul>
+<li><strong>Tip:</strong> You can peek into the queue and see the message using a Storage Explorer tool.</li>
+</ul>
+</li>
+<li><strong>.GetMessageFromQueue()</strong> - This method collects the updated message from the queue and then confirms the dequeue by deleting it.</li>
+<li><strong>.ClearMessages()</strong> - This method clears all messages from the queue in case you need to start over.</li>
+</ul>
+<blockquote>
+<p><strong>Speaking Points:</strong> A message body of a queue message can be maximum 64KB in size. UpdateMessage can be used to process one message in several steps but normal processing is to send and receive messages only once. The delete message action confirms to the queue that the message is indeed processed. If the message is not deleted in time the message will reappear in the queue with the DequeueCount property raised by one. This enables poison message handling. The queue timeout time for holding on to a message before it reappears is a value you can set when you fetch the message. Queues do not support batch processing.</p>
+</blockquote>
+<p><a name="Demo6"></a></p>
+<h2 id="demo-6-enter-entities-into-a-table">Demo 6) Enter Entities into a table</h2>
+<p>The demo class TableDemoTests contains three tests that interact with Azure Tables.</p>
+<ul>
+<li><strong>.SendEntityToTable()</strong> - The method inserts or replaces a simple PersonEntity into the Azure Table.<ul>
+<li><strong>Tip:</strong> You can see the Entity in the table using a Storage Explorer tool.</li>
+</ul>
+</li>
+<li><strong>.SendDifferentEntityToTable()</strong> - The method batch inserts two AnimalEntities into the same Azure Table.<ul>
+<li><strong>Tip:</strong> You can see the Entities in the table using a Storage Explorer tool.</li>
+</ul>
+</li>
+<li><strong>.ClearTable()</strong> - The method removes first the person and then the two dogs.</li>
+</ul>
+<blockquote>
+<p><strong>Speaking Points:</strong> InsertOrReplace and InsertOrMerge are useful operations on Azure Tables which are more mild than Insert. A Table can have 255 properties three of which are PartitionKey, RowKey and TimeStamp. The first two make up the composite unique key for the row. Batching operations can take place on one partition only. Rows with the same PartitionKey are always stored on one storage node and are fast to interact with. Strive to use the PartitionKey in every query on an Azure Table else a fan-out-query might be executed in the storage system. A table does not enforce a schema - in our sample Persons and Animals live happily in the same table. Normal operations is to have one type of entity in a table but different versions of the entity might define different columns.</p>
+</blockquote>
+<p><a name="summary"></a></p>
+<h2 id="summary">Summary</h2>
+<p>By completing these demos you should have understood how you can leverage Microsoft Azure Storage for your storage needs and access it from your code.</p>
+
+      </div>
+  </body>
+</html>
